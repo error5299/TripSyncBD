@@ -328,20 +328,22 @@ export const AdminLayout: React.FC = () => {
     { name: 'সেটিংস', icon: SettingsIcon },
   ];
 
-  // CSV Export utility
+  // CSV Export utility with UTF-8 BOM for Bengali encoding support in Excel
   const exportParticipantsCSV = () => {
     const headers = ['BookingCode,Name,Phone,Gender,Seats,TotalAmount,PaidAmount,TrxID,Status,BoardingPoint,FoodPref,CheckedIn'];
     const rows = bookings.map(b => 
       `"${b.bookingCode}","${b.name}","${b.phone}","${b.gender}","${b.seatLabels.join(' ')}",${b.totalAmount},${b.paidAmount},"${b.trxId}","${b.paymentStatus}","${b.boardingPoint}","${b.dietaryPreference}",${b.checkedIn ? 'Yes' : 'No'}`
     );
-    const csvContent = 'data:text/csv;charset=utf-8,' + [headers, ...rows].join('\n');
-    const encodedUri = encodeURI(csvContent);
+    const csvContent = '\uFEFF' + [headers, ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
+    link.setAttribute('href', url);
     link.setAttribute('download', `Tanguar_Tour_Participants_${Date.now()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(url);
   };
 
   return (
