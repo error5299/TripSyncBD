@@ -199,6 +199,63 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, [bookings.length]);
 
+  // Automatic Seat Layout Reconciliation with Bookings (Ensures server reboots/restarts automatically rebook seats based on written bookings)
+  useEffect(() => {
+    if (bookings.length >= 0 && seats.length === 40) {
+      let needsUpdate = false;
+      const reconciled = seats.map(s => {
+        const activeBooking = bookings.find(b => 
+          (b.paymentStatus === 'নিশ্চিত' || b.paymentStatus === 'অপেক্ষমাণ') && 
+          b.seatNumbers.includes(s.number)
+        );
+
+        if (activeBooking) {
+          const passengerInfo = activeBooking.passengers?.find(p => p.seatNumber === s.number);
+          const pName = passengerInfo?.name || activeBooking.name;
+          const pGender = passengerInfo?.gender || activeBooking.gender;
+          const pPhone = passengerInfo?.phone || activeBooking.phone;
+          const targetStatus: SeatStatus = activeBooking.paymentStatus === 'নিশ্চিত' ? 'booked' : 'reserved';
+
+          if (s.status !== targetStatus || s.passengerName !== pName) {
+            needsUpdate = true;
+          }
+
+          return {
+            ...s,
+            status: targetStatus,
+            gender: pGender,
+            passengerName: pName,
+            bookedBy: {
+              name: pName,
+              phone: pPhone,
+              bookingId: activeBooking.bookingCode,
+              gender: pGender,
+            }
+          };
+        } else {
+          if (s.status === 'booked' || s.status === 'reserved') {
+            needsUpdate = true;
+            return {
+              ...s,
+              status: 'available' as const,
+              gender: undefined,
+              passengerName: undefined,
+              bookedBy: undefined
+            };
+          }
+          return s;
+        }
+      });
+
+      if (needsUpdate) {
+        setSeats(reconciled);
+        setDoc(doc(db, 'tour_data', 'seats'), {
+          seatsList: sanitizeForFirestore(reconciled)
+        }).catch(console.error);
+      }
+    }
+  }, [bookings]);
+
   // =========================================================================
   // REAL-TIME FIRESTORE SUBSCRIPTIONS (SYNC ACROSS ALL USERS WORLDWIDE)
   // =========================================================================
