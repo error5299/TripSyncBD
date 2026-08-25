@@ -1,0 +1,6 @@
+{
+  "name": "টাঙ্গুয়ার হাওর ভ্রমণ ২০২৬",
+  "description": "টাঙ্গুয়ার হাওর গ্রুপ ট্যুরের প্রিমিয়াম ও সিনেমাটিক ভ্রমণ ওয়েবসাইট। জলের বুকে, আকাশের নিচে—একটি স্মরণীয় যাত্রা।",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
