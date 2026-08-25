@@ -7,12 +7,14 @@ interface BatchTicketPrintModalProps {
   isOpen: boolean;
   onClose: () => void;
   targetBookingId?: string | null;
+  selectedBookingIds?: string[];
 }
 
 export const BatchTicketPrintModal: React.FC<BatchTicketPrintModalProps> = ({
   isOpen,
   onClose,
-  targetBookingId
+  targetBookingId,
+  selectedBookingIds = []
 }) => {
   const { bookings, settings } = useTour();
   const [statusFilter, setStatusFilter] = useState<'all' | 'নিশ্চিত' | 'অপেক্ষমাণ'>('নিশ্চিত');
@@ -22,6 +24,9 @@ export const BatchTicketPrintModal: React.FC<BatchTicketPrintModalProps> = ({
   // Filter bookings
   const filteredBookings = bookings.filter(b => {
     if (targetBookingId) return b.id === targetBookingId;
+    if (selectedBookingIds && selectedBookingIds.length > 0) {
+      return selectedBookingIds.includes(b.id);
+    }
     if (statusFilter === 'all') return true;
     return b.paymentStatus === statusFilter;
   });

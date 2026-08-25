@@ -113,6 +113,7 @@ export const AdminLayout: React.FC = () => {
   // Batch / Single Ticket Print Modal State
   const [isBatchPrintModalOpen, setIsBatchPrintModalOpen] = useState(false);
   const [printBookingId, setPrintBookingId] = useState<string | null>(null);
+  const [selectedBookingIds, setSelectedBookingIds] = useState<string[]>([]);
 
   // Offline Booking Confirmation Modal State
   const [confirmModalTarget, setConfirmModalTarget] = useState<Booking | null>(null);
@@ -920,9 +921,23 @@ export const AdminLayout: React.FC = () => {
                   ))}
                 </div>
 
+                {selectedBookingIds.length > 0 && (
+                  <button
+                    onClick={() => {
+                      setPrintBookingId(null);
+                      setIsBatchPrintModalOpen(true);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white text-xs font-bold shadow-md flex items-center gap-1.5 animate-pulse"
+                  >
+                    <Printer className="w-3.5 h-3.5 text-white" />
+                    <span>সিলেক্টেড প্রিন্ট ({selectedBookingIds.length})</span>
+                  </button>
+                )}
+
                 <button
                   onClick={() => {
                     setPrintBookingId(null);
+                    setSelectedBookingIds([]);
                     setIsBatchPrintModalOpen(true);
                   }}
                   className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 text-xs font-bold shadow-md flex items-center gap-1.5"
@@ -960,6 +975,33 @@ export const AdminLayout: React.FC = () => {
                   <table className="w-full text-left text-xs">
                     <thead className="bg-slate-950 text-slate-400 border-b border-slate-800">
                       <tr>
+                        <th className="p-4 w-10 text-center">
+                          <input
+                            type="checkbox"
+                            onChange={(e) => {
+                              const filteredList = bookings.filter(b => {
+                                const matchSearch = b.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                                    b.phone.includes(searchTerm) || 
+                                                    b.bookingCode.toLowerCase().includes(searchTerm.toLowerCase());
+                                const matchStatus = statusFilter === 'সব' || b.paymentStatus === statusFilter;
+                                return matchSearch && matchStatus;
+                              });
+                              if (e.target.checked) {
+                                setSelectedBookingIds(filteredList.map(b => b.id));
+                              } else {
+                                setSelectedBookingIds([]);
+                              }
+                            }}
+                            checked={selectedBookingIds.length > 0 && selectedBookingIds.length === bookings.filter(b => {
+                              const matchSearch = b.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                                                  b.phone.includes(searchTerm) || 
+                                                  b.bookingCode.toLowerCase().includes(searchTerm.toLowerCase());
+                              const matchStatus = statusFilter === 'সব' || b.paymentStatus === statusFilter;
+                              return matchSearch && matchStatus;
+                            }).length}
+                            className="rounded border-slate-700 bg-slate-900 text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer"
+                          />
+                        </th>
                         <th className="p-4 font-semibold">বুকিং কোড</th>
                         <th className="p-4 font-semibold">যাত্রীর নাম ও ফোন</th>
                         <th className="p-4 font-semibold">সিট</th>
@@ -980,7 +1022,21 @@ export const AdminLayout: React.FC = () => {
                           return matchSearch && matchStatus;
                         })
                         .map((b) => (
-                          <tr key={b.id} className="hover:bg-slate-800/40">
+                          <tr key={b.id} className={`hover:bg-slate-800/40 ${selectedBookingIds.includes(b.id) ? 'bg-emerald-950/20' : ''}`}>
+                            <td className="p-4 text-center">
+                              <input
+                                type="checkbox"
+                                checked={selectedBookingIds.includes(b.id)}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedBookingIds(prev => [...prev, b.id]);
+                                  } else {
+                                    setSelectedBookingIds(prev => prev.filter(id => id !== b.id));
+                                  }
+                                }}
+                                className="rounded border-slate-700 bg-slate-900 text-emerald-600 focus:ring-emerald-500 w-4 h-4 cursor-pointer"
+                              />
+                            </td>
                             <td className="p-4 font-mono font-bold text-emerald-400">{b.bookingCode}</td>
                             <td className="p-4">
                               <strong className="text-white block font-medium">{b.name}</strong>
@@ -2494,6 +2550,7 @@ export const AdminLayout: React.FC = () => {
         isOpen={isBatchPrintModalOpen}
         onClose={() => setIsBatchPrintModalOpen(false)}
         targetBookingId={printBookingId}
+        selectedBookingIds={selectedBookingIds}
       />
 
     </div>
