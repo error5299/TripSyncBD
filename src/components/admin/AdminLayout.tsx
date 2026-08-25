@@ -38,6 +38,7 @@ import {
   Check
 } from 'lucide-react';
 import { Booking, SeatStatus, ExpenseItem, Announcement } from '../../types';
+import { BatchTicketPrintModal } from './BatchTicketPrintModal';
 
 export const AdminLayout: React.FC = () => {
   const {
@@ -108,6 +109,10 @@ export const AdminLayout: React.FC = () => {
 
   // Reset to Zero Confirmation Dialog
   const [showResetZeroModal, setShowResetZeroModal] = useState(false);
+
+  // Batch / Single Ticket Print Modal State
+  const [isBatchPrintModalOpen, setIsBatchPrintModalOpen] = useState(false);
+  const [printBookingId, setPrintBookingId] = useState<string | null>(null);
 
   // Offline Booking Confirmation Modal State
   const [confirmModalTarget, setConfirmModalTarget] = useState<Booking | null>(null);
@@ -916,8 +921,19 @@ export const AdminLayout: React.FC = () => {
                 </div>
 
                 <button
+                  onClick={() => {
+                    setPrintBookingId(null);
+                    setIsBatchPrintModalOpen(true);
+                  }}
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 text-xs font-bold shadow-md flex items-center gap-1.5"
+                >
+                  <Printer className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>সব টিকিট প্রিন্ট (A4)</span>
+                </button>
+
+                <button
                   onClick={() => setIsDirectTicketModalOpen(true)}
-                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-md flex items-center gap-1.5 ml-auto sm:ml-2"
+                  className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-md flex items-center gap-1.5"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>নতুন টিকিট ইস্যু ও কনফার্ম</span>
@@ -2472,6 +2488,13 @@ export const AdminLayout: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Batch / Single Ticket Print Modal */}
+      <BatchTicketPrintModal
+        isOpen={isBatchPrintModalOpen}
+        onClose={() => setIsBatchPrintModalOpen(false)}
+        targetBookingId={printBookingId}
+      />
 
     </div>
   );
