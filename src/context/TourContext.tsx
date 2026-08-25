@@ -220,10 +220,11 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (docSnap.exists() && docSnap.data()?.seatsList) {
         setSeats(docSnap.data().seatsList as Seat[]);
       } else {
-        // Initialize default 40 seats in Firestore
+        const initialSeats = generateInitialSeats();
         setDoc(doc(db, 'tour_data', 'seats'), {
-          seatsList: sanitizeForFirestore(generateInitialSeats())
+          seatsList: sanitizeForFirestore(initialSeats)
         }).catch(console.error);
+        setSeats(initialSeats);
       }
     }, (error) => {
       console.warn('Seats Firestore snapshot error:', error);
@@ -235,7 +236,6 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: doc.id,
         ...doc.data()
       })) as Booking[];
-      // Sort newest first
       liveBookings.sort((a, b) => (b.id > a.id ? 1 : -1));
       setBookings(liveBookings);
     }, (error) => {
