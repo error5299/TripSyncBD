@@ -5,16 +5,16 @@ export const WhatsIncluded: React.FC = () => {
   const inclusions = [
     {
       icon: Bus,
-      title: 'কুষ্টিয়া - নেত্রকোনা আপ-ডাউন বাস',
-      desc: 'আল্লারদর্গা, ভেড়ামারা, পাবনা, সিরাজগঞ্জ হয়ে নেত্রকোনা পর্যন্ত আরামদায়ক ও নিরাপদ বাস যাতায়াত। সবার জন্য নির্দিষ্ট আসন।',
-      image: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=600&q=80',
+      title: 'কুষ্টিয়া - সুনামগঞ্জ আপ-ডাউন বাস',
+      desc: 'আল্লারদর্গা, ভেড়ামারা, পাবনা, সিরাজগঞ্জ হয়ে সুনামগঞ্জ পর্যন্ত আরামদায়ক ও নিরাপদ বাস যাতায়াত। সবার জন্য নির্দিষ্ট আসন।',
+      image: 'https://i.ytimg.com/vi/iVC69_Ay34k/sddefault.jpg',
       tag: 'আপ-ডাউন বাস'
     },
     {
       icon: Ship,
       title: 'সারাদিনের জন্য বোট ভাড়া',
       desc: 'টাঙ্গুয়ার হাওর ও সংলগ্ন সকল প্রধান আকর্ষণীয় স্পটগুলো স্বাচ্ছন্দ্যে ঘুরে দেখার জন্য সম্পূর্ণ রিজার্ভ বড় ট্রলার/বোট।',
-      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80',
+      image: 'https://hoihullorholidays.com/wp-content/uploads/2025/04/InShot_20250427_184324899-3.jpg',
       tag: 'সারাদিনের বোট'
     },
     {
@@ -28,14 +28,14 @@ export const WhatsIncluded: React.FC = () => {
       icon: MapPin,
       title: '৮টি আকর্ষণীয় দর্শনীয় স্থান',
       desc: 'টাঙ্গুয়ার হাওর, ওয়াচ টাওয়ার, টেকেরঘাট, শিমুল বাগান, বারিক্কা টিলা, সাদা পাথর, নিলাদ্রি লেক এবং লাকমা ছড়া।',
-      image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
+      image: 'https://i.pinimg.com/736x/f7/fd/04/f7fd04bb33e235854f107e357856c21d.jpg?auto=format&fit=crop&w=600&q=80',
       tag: '৮টি স্পট দর্শন'
     },
     {
       icon: Users,
       title: 'সকলের জন্য উন্মুক্ত ও নিরাপদ',
       desc: 'ছেলে, মেয়ে, কাপল, ফ্যামিলি সহ সবাই অংশ নিতে পারবেন। বন্ধুত্বপূর্ণ পরিবারসুলভ পরিবেশ ও সুশৃঙ্খল টিম ব্যবস্থাপনা।',
-      image: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=600&q=80',
+      image: 'https://vromonprio.com/images/thumbnails/tanguar-haor.webp?auto=format&fit=crop&w=600&q=80',
       tag: 'ফ্যামিলি ও কাপল ফ্রেন্ডলি'
     },
     {

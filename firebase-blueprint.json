@@ -1,0 +1,66 @@
+{
+  "entities": {
+    "TourSetting": {
+      "title": "Tour Settings",
+      "description": "Global settings for the tour",
+      "type": "object",
+      "properties": {
+        "tourName": { "type": "string" },
+        "destination": { "type": "string" },
+        "pricePerPerson": { "type": "number" },
+        "totalSeats": { "type": "number" },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" }
+      }
+    },
+    "Seat": {
+      "title": "Bus Seat",
+      "description": "Bus seat data model",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number" },
+        "number": { "type": "number" },
+        "label": { "type": "string" },
+        "status": { "type": "string" }
+      }
+    },
+    "Booking": {
+      "title": "Tour Booking",
+      "description": "Passenger tour booking model",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "phone": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "paymentStatus": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "/tour_data/settings": {
+      "schema": "TourSetting",
+      "description": "General settings for the tour"
+    },
+    "/tour_data/seats": {
+      "schema": "Seat",
+      "description": "Live 40 seats layout and status"
+    },
+    "/tour_bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Passenger ticket bookings"
+    },
+    "/tour_leads/{leadId}": {
+      "schema": "Booking",
+      "description": "Interested passenger queries and leads"
+    },
+    "/tour_expenses/{expenseId}": {
+      "schema": "Booking",
+      "description": "Admin tour expense logs"
+    },
+    "/tour_announcements/{announcementId}": {
+      "schema": "Booking",
+      "description": "Notice board announcements"
+    }
+  }
+}

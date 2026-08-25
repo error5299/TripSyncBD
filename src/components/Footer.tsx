@@ -26,8 +26,13 @@ export const Footer: React.FC = () => {
           {/* Brand & Narrative */}
           <div className="lg:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 flex items-center justify-center text-white shadow-lg">
-                <Anchor className="w-5 h-5" />
+              <div className="w-12 h-12 rounded-xl bg-white p-0.5 shadow-lg border border-slate-800 overflow-hidden flex items-center justify-center">
+                <img 
+                  src="https://www.belayet.pro.bd/wp-content/uploads/2026/08/ChatGPT-Image-Aug-25-2026-05_46_12-PM.png"
+                  alt="Logo"
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover rounded-lg"
+                />
               </div>
               <div>
                 <span className="text-xl font-bold text-white block leading-none font-sans">
@@ -143,16 +148,18 @@ export const Footer: React.FC = () => {
             <span>© ২০২৬ টাঙ্গুয়ার হাওর ভ্রমণ টিম। সর্বস্বত্ব সংরক্ষিত।</span>
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
             <span className="text-slate-400 flex items-center gap-1">
-              ডিজাইন ও ব্যবস্থাপনা <Heart className="w-3 h-3 text-rose-500 fill-rose-500 ml-1" />
+              ডিজাইন ও ব্যবস্থাপনা <Heart className="w-3 h-3 text-rose-500 fill-rose-500 mx-1" />
             </span>
-            <button
-              onClick={() => setIsAdminView(true)}
-              className="text-slate-400 hover:text-emerald-300 transition-colors underline"
+            <a
+              href="https://www.belayet.pro.bd"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-slate-200 hover:text-emerald-400 font-semibold transition-colors underline"
             >
-              অ্যাডমিন পোর্টাল
-            </button>
+              বেলায়েত হোসেন
+            </a>
           </div>
         </div>
 

@@ -64,7 +64,7 @@ export const EmotionalIntro: React.FC = () => {
               {/* Main Image */}
               <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white bg-slate-200">
                 <img
-                  src="https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1000&q=80"
+                  src="https://greenbelt.com.bd/wp-content/uploads/2025/12/%E0%A6%9F%E0%A6%BE%E0%A6%99%E0%A7%8D%E0%A6%97%E0%A7%81%E0%A6%AF%E0%A6%BC%E0%A6%BE%E0%A6%B0-%E0%A6%B9%E0%A6%BE%E0%A6%93%E0%A6%B0-%E0%A6%9F%E0%A7%8D%E0%A6%AF%E0%A7%81%E0%A6%B0-%E0%A6%AA%E0%A7%8D%E0%A6%AF%E0%A6%BE%E0%A6%95%E0%A7%87%E0%A6%9C-Tanguar-Haor-Tour-Package-1-scaled.webp"
                   alt="টাঙ্গুয়ার হাওরের নৌকা ও প্রকৃতি"
                   referrerPolicy="no-referrer"
                   className="w-full h-[480px] object-cover hover:scale-105 transition-transform duration-700"

@@ -3,8 +3,8 @@ import { Seat, Booking, InterestedLead, ExpenseItem, Announcement, GalleryPhoto,
 export const initialTourSettings: TourSettings = {
   tourTitle: 'টাঙ্গুয়ার হাওর ভ্রমণ ২০২৬',
   tourSubtitle: 'আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ হয়ে টাঙ্গুয়ার হাওর',
-  tourDates: '৪ সেপ্টেম্বর ২০২৬ (তারিখ পরিবর্তন হতে পারে)',
-  departureTime: '৪ সেপ্টেম্বর ২০২৬ (বিকাল/সন্ধ্যা যাত্রা)',
+  tourDates: '৩ সেপ্টেম্বর ২০২৬ (তারিখ পরিবর্তন হতে পারে)',
+  departureTime: '৩ সেপ্টেম্বর ২০২৬ (বিকাল/সন্ধ্যা যাত্রা)',
   totalSeats: 40,
   pricePerPerson: 2699,
   organizerName: 'হাওর অভিযান টিম',
@@ -50,14 +50,14 @@ export const initialAnnouncements: Announcement[] = [
   {
     id: 'anc-1',
     title: 'ভ্রমণের তারিখ ও বুকিং সংক্রান্ত জরুরি ঘোষণা',
-    message: 'যাত্রার সম্ভাব্য তারিখ ৪ সেপ্টেম্বর (তারিখ পরিবর্তন হতে পারে)। সিট খালি থাকা সাপেক্ষে বুকিং চলবে। কোনো মৌখিক বুকিং গ্রহণযোগ্য নয়।',
+    message: 'যাত্রার সম্ভাব্য তারিখ ৩ সেপ্টেম্বর (তারিখ পরিবর্তন হতে পারে)। সিট খালি থাকা সাপেক্ষে বুকিং চলবে। কোনো মৌখিক বুকিং গ্রহণযোগ্য নয়।',
     date: '২০২৬-০৮-২৫',
     priority: 'জরুরি'
   },
   {
     id: 'anc-2',
     title: 'যাত্রার রুট ও পিকআপ পয়েন্ট সংক্রান্ত তথ্য',
-    message: 'যাত্রার রুট: আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ হয়ে কুষ্টিয়া থেকে নেত্রকোনা আপ-ডাউন বাস। ছেলে, মেয়ে, কাপল ও ফ্যামিলি সহ সবাই অংশ নিতে পারবেন।',
+    message: 'যাত্রার রুট: আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ হয়ে কুষ্টিয়া থেকে সুনামগঞ্জ আপ-ডাউন বাস। ছেলে, মেয়ে, কাপল ও ফ্যামিলি সহ সবাই অংশ নিতে পারবেন।',
     date: '২০২৬-০৮-২৫',
     priority: 'সাধারণ'
   }
@@ -68,7 +68,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     id: 'gal-1',
     title: 'টাঙ্গুয়ার নীল দিগন্ত',
     category: 'হাওর',
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://cdn.shortpixel.ai/spai/q_lossy+w_898+to_auto+ret_img/sofhor.com/wp-content/uploads/2020/05/%E0%A6%9F%E0%A6%BE%E0%A6%82%E0%A6%97%E0%A7%81%E0%A7%9F%E0%A6%BE%E0%A6%B0-%E0%A6%B9%E0%A6%BE%E0%A6%93%E0%A6%B0-%E0%A6%B8%E0%A7%81%E0%A6%A8%E0%A6%BE%E0%A6%AE%E0%A6%97%E0%A6%9E%E0%A7%8D%E0%A6%9C.jpg?auto=format&fit=crop&w=1200&q=80',
     caption: 'স্বচ্ছ শান্ত নীল জলরাশি আর উন্মুক্ত আকাশ',
     location: 'টাঙ্গুয়ার হাওর'
   },
@@ -76,7 +76,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     id: 'gal-2',
     title: 'মেঘালয়ের পাহাড়ের কোল ও নিলাদ্রি',
     category: 'পাহাড়',
-    imageUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqeLvOwLhGoOKhBRpVqX6NzCzRW0irz6CpW5gmsyqUh9zhOc69cWMdoYIg&s=10?auto=format&fit=crop&w=1200&q=80',
     caption: 'সীমান্তের ওপারে দাঁড়িয়ে থাকা ঘন সবুজ মেঘালয় পাহাড় ও নিলাদ্রি লেক',
     location: 'টেকেরঘাট ও নিলাদ্রি'
   },
@@ -84,7 +84,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     id: 'gal-3',
     title: 'হাওরের নৌযাত্রা',
     category: 'নৌযাত্রা',
-    imageUrl: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkqHL6P-4j23O9FEr8KOexFsNodNKfUuVxkG34ExFnFQuC-Z8aY4HPNrlT&s=10?auto=format&fit=crop&w=1200&q=80',
     caption: 'সারাদিনের জন্য সুবিশাল বোটে হাওর ঘুরে দেখার আনন্দ',
     location: 'টাঙ্গুয়ার হাওর'
   },
@@ -92,7 +92,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     id: 'gal-4',
     title: 'বারিক্কা টিলা ও জাদুকাটা নদী',
     category: 'প্রকৃতি',
-    imageUrl: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLyzkyhmjNE6s_DeNcRUzx2lzQ8AUnd-vearBSqPafH37gPppb9DcAZaY&s=10?auto=format&fit=crop&w=1200&q=80',
     caption: 'কাঁচের মতো স্বচ্ছ পানির জাদুকাটা নদী ও বারিক্কা টিলা',
     location: 'বারিক্কা টিলা'
   },
@@ -100,7 +100,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     id: 'gal-5',
     title: 'ওয়াচ টাওয়ার ও দিগন্তজোড়া হাওর',
     category: 'হাওর',
-    imageUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRt7abfooQ5B6oRc86FOfg8BGVK0WLYnAX0lOT_O2q2Qy3bZuELPee-2y8M&s=10?auto=format&fit=crop&w=1200&q=80',
     caption: 'ওয়াচ টাওয়ার থেকে হাওরের জলে সূর্যের অপূর্ব প্রতিফলন',
     location: 'ওয়াচ টাওয়ার প্রাঙ্গণ'
   },
@@ -108,7 +108,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     id: 'gal-6',
     title: 'জয়নাল আবেদীন শিমুল বাগান',
     category: 'প্রকৃতি',
-    imageUrl: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyO7aVjQzuBX81VjDlWMDSWhPnIEhLCD9PKdKvfSfJSQCe4Al8NutOGNA&s=10?auto=format&fit=crop&w=1200&q=80',
     caption: 'সবুজ ও প্রকৃতির মেলবন্ধনে অনন্য শিমুল বাগান',
     location: 'শিমুল বাগান'
   },
@@ -116,7 +116,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     id: 'gal-7',
     title: 'সাদা পাথর ও লাকমা ছড়া',
     category: 'প্রকৃতি',
-    imageUrl: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://greenbelt.com.bd/wp-content/uploads/2020/08/bhola-01-scaled.jpg?auto=format&fit=crop&w=1200&q=80',
     caption: 'পাহাড়ের শীতল ঝর্ণাধারা আর পাথুরে লাকমা ছড়া',
     location: 'লাকমা ছড়া ও সাদা পাথর'
   },
@@ -124,7 +124,7 @@ export const galleryPhotos: GalleryPhoto[] = [
     id: 'gal-8',
     title: 'টেকেরঘাট ও গ্রুপ ভ্রমণ স্মৃতি',
     category: 'ভ্রমণের মুহূর্ত',
-    imageUrl: 'https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1200&q=80',
+    imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSR6ItvJ2zqIBz-BK4NpnuoOYkphaE1Hc0wG0IxrnYOq1YnkEPDRSNpQss7&s=10?auto=format&fit=crop&w=1200&q=80',
     caption: 'সহযাত্রীদের সাথে প্রাণখোলা আড্ডা ও আজীবনের স্মৃতি',
     location: 'টেকেরঘাট'
   }
@@ -134,17 +134,17 @@ export const tourTimeline: ItineraryDay[] = [
   {
     number: '০১',
     time: 'রাত ১: সন্ধ্যা/রাত যাত্রা',
-    title: 'আল্লারদর্গা থেকে নেত্রকোনার উদ্দেশ্যে যাত্রা',
-    description: '৪ সেপ্টেম্বর (তারিখ পরিবর্তন হতে পারে), আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ রুট হয়ে কুষ্টিয়া থেকে নেত্রকোনার উদ্দেশ্যে আমাদের সংরক্ষিত রিজার্ভ বাসে আরামদায়ক নাইট জার্নি শুরু।',
-    location: 'আল্লারদর্গা ➔ ভেড়ামারা ➔ পাবনা ➔ সিরাজগঞ্জ ➔ নেত্রকোনা',
+    title: 'আল্লারদর্গা থেকে সুনামগঞ্জের উদ্দেশ্যে যাত্রা',
+    description: '৩ সেপ্টেম্বর (তারিখ পরিবর্তন হতে পারে), আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ রুট হয়ে কুষ্টিয়া থেকে সুনামগঞ্জের উদ্দেশ্যে আমাদের সংরক্ষিত রিজার্ভ বাসে আরামদায়ক নাইট জার্নি শুরু।',
+    location: 'আল্লারদর্গা ➔ ভেড়ামারা ➔ পাবনা ➔ সিরাজগঞ্জ ➔ সুনামগঞ্জ',
     highlights: ['আরামদায়ক সংরক্ষিত আসন', 'সহযাত্রীদের সাথে পরিচয় ও আড্ডা', 'হাইওয়ে বিরতি'],
-    imageUrl: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://i.ytimg.com/vi/iVC69_Ay34k/sddefault.jpg?auto=format&fit=crop&w=800&q=80'
   },
   {
     number: '০২',
     time: 'দিন ১: সকাল থেকে সন্ধ্যা',
     title: 'বোট বোর্ডিং ও হাওরের ৮টি আকর্ষণীয় স্পট দর্শন',
-    description: 'ভোরে নেত্রকোনা পৌঁছে তাহিরপুর ঘাটে সারাদিনের জন্য রিজার্ভ বোটে বোর্ডিং। দিনভর ঘুরে দেখবো টাঙ্গুয়ার হাওর, ওয়াচ টাওয়ার, টেকেরঘাট, শিমুল বাগান, বারিক্কা টিলা, সাদা পাথর, নিলাদ্রি ও লাকমা ছড়া। বোটে পরিবেশন করা হবে সুস্বাদু ২ বেলা খাবার।',
+    description: 'ভোরে সুনামগঞ্জ পৌঁছে তাহিরপুর ঘাটে সারাদিনের জন্য রিজার্ভ বোটে বোর্ডিং। দিনভর ঘুরে দেখবো টাঙ্গুয়ার হাওর, ওয়াচ টাওয়ার, টেকেরঘাট, শিমুল বাগান, বারিক্কা টিলা, সাদা পাথর, নিলাদ্রি ও লাকমা ছড়া। বোটে পরিবেশন করা হবে সুস্বাদু ২ বেলা খাবার।',
     location: 'টাঙ্গুয়ার হাওর, নিলাদ্রি, শিমুল বাগান, টেকেরঘাট, লাকমা ছড়া',
     highlights: [
       'টাঙ্গুয়ার হাওর ও ওয়াচ টাওয়ার দর্শন',
@@ -153,16 +153,16 @@ export const tourTimeline: ItineraryDay[] = [
       'সাদা পাথর ও লাকমা ছড়া',
       'বোটে মানসম্মত ও তৃপ্তিদায়ক ২ বেলা খাবার'
     ],
-    imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://www.bikebd.com/den/storage/app/files/shares/2024/07/hour.webp?auto=format&fit=crop&w=800&q=80'
   },
   {
     number: '০৩',
     time: 'রাত ২: ফিরতি যাত্রা',
-    title: 'নেত্রকোনা থেকে কুষ্টিয়ায় শুভ প্রত্যাবর্তন',
-    description: 'সারাদিনের চমৎকার ডে ট্যুর ও সূর্যাস্ত উপভোগ শেষে সন্ধ্যায় নেত্রকোনা থেকে ফিরতি বাসে বোর্ডিং। সিরাজগঞ্জ - পাবনা - ভেড়ামারা হয়ে পরের দিন ভোরে নিরাপদে আল্লারদর্গা, কুষ্টিয়ায় শুভ প্রত্যাবর্তন।',
-    location: 'নেত্রকোনা ➔ সিরাজগঞ্জ ➔ পাবনা ➔ ভেড়ামারা ➔ আল্লারদর্গা',
+    title: 'সুনামগঞ্জ থেকে কুষ্টিয়ায় শুভ প্রত্যাবর্তন',
+    description: 'সারাদিনের চমৎকার ডে ট্যুর ও সূর্যাস্ত উপভোগ শেষে সন্ধ্যায় সুনামগঞ্জ থেকে ফিরতি বাসে বোর্ডিং। সিরাজগঞ্জ - পাবনা - ভেড়ামারা হয়ে পরের দিন ভোরে নিরাপদে আল্লারদর্গা, কুষ্টিয়ায় শুভ প্রত্যাবর্তন।',
+    location: 'সুনামগঞ্জ ➔ সিরাজগঞ্জ ➔ পাবনা ➔ ভেড়ামারা ➔ আল্লারদর্গা',
     highlights: ['স্মৃতিময় মুহূর্ত ও গ্রুপ ফটো', 'নিরাপদ আরামদায়ক ফিরতি নাইট জার্নি', 'পরের দিন ভোরে গন্তব্যে পৌঁছানো'],
-    imageUrl: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?auto=format&fit=crop&w=800&q=80'
+    imageUrl: 'https://i.ytimg.com/vi/iVC69_Ay34k/sddefault.jpg?auto=format&fit=crop&w=800&q=80'
   }
 ];
 
@@ -173,11 +173,11 @@ export const faqs = [
   },
   {
     q: 'যাত্রার রুট ও সময়কাল কী?',
-    a: 'যাত্রার রুট: আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ হয়ে নেত্রকোনা ও টাঙ্গুয়ার হাওর। সময়কাল: ২ রাত ১ দিন ডে ট্যুর। যাত্রার সম্ভাব্য তারিখ ৪ সেপ্টেম্বর ২০২৬ (তারিখ পরিবর্তন হতে পারে)।'
+    a: 'যাত্রার রুট: আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ হয়ে সুনামগঞ্জ ও টাঙ্গুয়ার হাওর। সময়কাল: ২ রাত ১ দিন ডে ট্যুর। যাত্রার সম্ভাব্য তারিখ ৩ সেপ্টেম্বর ২০২৬ (তারিখ পরিবর্তন হতে পারে)।'
   },
   {
     q: 'প্যাকেজ ফির মধ্যে কী কী অন্তর্ভুক্ত রয়েছে?',
-    a: 'ফির অন্তর্ভুক্ত: ১) কুষ্টিয়া - নেত্রকোনা আপ-ডাউন বাস যাতায়াত, ২) সারাদিনের জন্য সুসজ্জিত বোট ভাড়া, এবং ৩) বোটে সুস্বাদু ২ বেলা পুষ্টিকর খাবার।'
+    a: 'ফির অন্তর্ভুক্ত: ১) কুষ্টিয়া - সুনামগঞ্জ আপ-ডাউন বাস যাতায়াত, ২) সারাদিনের জন্য সুসজ্জিত বোট ভাড়া, এবং ৩) বোটে সুস্বাদু ২ বেলা পুষ্টিকর খাবার।'
   },
   {
     q: 'ট্যুর প্যাকেজে আমরা কোন কোন দর্শনীয় স্থান দেখব?',

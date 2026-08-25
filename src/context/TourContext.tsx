@@ -1,6 +1,20 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Seat, Booking, InterestedLead, ExpenseItem, Announcement, TourSettings } from '../types';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { Seat, SeatStatus, Booking, InterestedLead, ExpenseItem, Announcement, TourSettings } from '../types';
 import { initialTourSettings, generateInitialSeats, initialBookings, initialInterestedLeads, initialExpenses, initialAnnouncements } from '../data/initialData';
+import { db } from '../lib/firebase';
+import { 
+  doc, 
+  setDoc, 
+  onSnapshot, 
+  collection, 
+  deleteDoc, 
+  writeBatch 
+} from 'firebase/firestore';
+
+// Helper to remove undefined values for clean Firestore storage
+function sanitizeForFirestore<T>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj, (key, value) => value === undefined ? null : value));
+}
 
 interface TourContextType {
   settings: TourSettings;
@@ -19,7 +33,7 @@ interface TourContextType {
   closeBookingModal: () => void;
   createBooking: (bookingData: Omit<Booking, 'id' | 'bookingCode' | 'bookingDate' | 'checkedIn'>) => Booking;
   updateBookingStatus: (id: string, status: Booking['paymentStatus']) => void;
-  confirmTicket: (id: string) => void;
+  confirmTicket: (id: string, details?: { paidAmount?: number; paymentMethod?: Booking['paymentMethod']; trxId?: string }) => void;
   toggleCheckIn: (id: string) => void;
   deleteBooking: (id: string) => void;
   
@@ -116,7 +130,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return localStorage.getItem('th_v4_admin_logged') === 'true';
   });
 
-  // Sync to localStorage
+  // Keep localStorage as local fallback
   useEffect(() => {
     localStorage.setItem('th_v4_settings', JSON.stringify(settings));
   }, [settings]);
@@ -142,11 +156,140 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [announcements]);
 
   useEffect(() => {
-    localStorage.setItem('th_v3_admin_logged', isAdminLoggedIn ? 'true' : 'false');
+    localStorage.setItem('th_v4_admin_logged', isAdminLoggedIn ? 'true' : 'false');
   }, [isAdminLoggedIn]);
 
+  // Auto-release pending/reserved bookings older than 1 hour
+  useEffect(() => {
+    const ONE_HOUR_MS = 60 * 60 * 1000;
+    const now = Date.now();
+    let hasExpired = false;
+    const updatedSeats = [...seats];
+    const updatedBookings = bookings.map(b => {
+      if (b.paymentStatus === 'অপেক্ষমাণ') {
+        const bookingTime = b.createdAt || (b.id.startsWith('b_') ? parseInt(b.id.replace('b_', ''), 10) : now - ONE_HOUR_MS - 1);
+        if (now - bookingTime > ONE_HOUR_MS) {
+          hasExpired = true;
+          b.seatNumbers.forEach(seatNum => {
+            const sIdx = updatedSeats.findIndex(s => s.number === seatNum);
+            if (sIdx !== -1 && updatedSeats[sIdx].status === 'reserved') {
+              updatedSeats[sIdx] = {
+                ...updatedSeats[sIdx],
+                status: 'available',
+                gender: undefined,
+                passengerName: undefined,
+                bookedBy: undefined
+              };
+            }
+          });
+          const expiredBooking = { ...b, paymentStatus: 'বাতিল' as const };
+          setDoc(doc(db, 'tour_bookings', b.id), sanitizeForFirestore(expiredBooking)).catch(console.error);
+          return expiredBooking;
+        }
+      }
+      return b;
+    });
+
+    if (hasExpired) {
+      setSeats(updatedSeats);
+      setBookings(updatedBookings);
+      setDoc(doc(db, 'tour_data', 'seats'), {
+        seatsList: sanitizeForFirestore(updatedSeats)
+      }).catch(console.error);
+    }
+  }, [bookings.length]);
+
+  // =========================================================================
+  // REAL-TIME FIRESTORE SUBSCRIPTIONS (SYNC ACROSS ALL USERS WORLDWIDE)
+  // =========================================================================
+  useEffect(() => {
+    // 1. Tour Settings Live Subscription
+    const unsubSettings = onSnapshot(doc(db, 'tour_data', 'settings'), (docSnap) => {
+      if (docSnap.exists()) {
+        setSettings(docSnap.data() as TourSettings);
+      } else {
+        // Initialize default in Firestore
+        setDoc(doc(db, 'tour_data', 'settings'), sanitizeForFirestore(initialTourSettings)).catch(console.error);
+      }
+    }, (error) => {
+      console.warn('Settings Firestore snapshot error:', error);
+    });
+
+    // 2. Tour Seats Live Subscription (40 bus seats state)
+    const unsubSeats = onSnapshot(doc(db, 'tour_data', 'seats'), (docSnap) => {
+      if (docSnap.exists() && docSnap.data()?.seatsList) {
+        setSeats(docSnap.data().seatsList as Seat[]);
+      } else {
+        // Initialize default 40 seats in Firestore
+        setDoc(doc(db, 'tour_data', 'seats'), {
+          seatsList: sanitizeForFirestore(generateInitialSeats())
+        }).catch(console.error);
+      }
+    }, (error) => {
+      console.warn('Seats Firestore snapshot error:', error);
+    });
+
+    // 3. Bookings Live Subscription
+    const unsubBookings = onSnapshot(collection(db, 'tour_bookings'), (snapshot) => {
+      const liveBookings: Booking[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Booking[];
+      // Sort newest first
+      liveBookings.sort((a, b) => (b.id > a.id ? 1 : -1));
+      setBookings(liveBookings);
+    }, (error) => {
+      console.warn('Bookings Firestore snapshot error:', error);
+    });
+
+    // 4. Interested Leads Live Subscription
+    const unsubLeads = onSnapshot(collection(db, 'tour_leads'), (snapshot) => {
+      const liveLeads: InterestedLead[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as InterestedLead[];
+      liveLeads.sort((a, b) => (b.id > a.id ? 1 : -1));
+      setInterestedLeads(liveLeads);
+    }, (error) => {
+      console.warn('Leads Firestore snapshot error:', error);
+    });
+
+    // 5. Expenses Live Subscription
+    const unsubExpenses = onSnapshot(collection(db, 'tour_expenses'), (snapshot) => {
+      const liveExpenses: ExpenseItem[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as ExpenseItem[];
+      setExpenses(liveExpenses);
+    }, (error) => {
+      console.warn('Expenses Firestore snapshot error:', error);
+    });
+
+    // 6. Announcements Live Subscription
+    const unsubAnnouncements = onSnapshot(collection(db, 'tour_announcements'), (snapshot) => {
+      const liveAnnouncements: Announcement[] = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as Announcement[];
+      setAnnouncements(liveAnnouncements);
+    }, (error) => {
+      console.warn('Announcements Firestore snapshot error:', error);
+    });
+
+    return () => {
+      unsubSettings();
+      unsubSeats();
+      unsubBookings();
+      unsubLeads();
+      unsubExpenses();
+      unsubAnnouncements();
+    };
+  }, []);
+
   const updateSettings = (newSettings: Partial<TourSettings>) => {
-    setSettings(prev => ({ ...prev, ...newSettings }));
+    const updated = { ...settings, ...newSettings };
+    setSettings(updated);
+    setDoc(doc(db, 'tour_data', 'settings'), sanitizeForFirestore(updated), { merge: true }).catch(console.error);
   };
 
   const openBookingModal = (seatNum?: number) => {
@@ -165,13 +308,14 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
       id: `b_${Date.now()}`,
       bookingCode: randomCode,
       bookingDate: new Date().toISOString().split('T')[0],
+      createdAt: Date.now(),
       checkedIn: false,
     };
 
-    setBookings(prev => [newBooking, ...prev]);
+    // Calculate updated seats: if booking is pending (paymentStatus === 'অপেক্ষমাণ'), seat status is 'reserved' (অপেক্ষমাণ)
+    const targetSeatStatus: SeatStatus = data.paymentStatus === 'নিশ্চিত' ? 'booked' : 'reserved';
 
-    // Update Seat Statuses with specific passenger details and gender
-    setSeats(prev => prev.map(s => {
+    const updatedSeats = seats.map(s => {
       if (data.seatNumbers.includes(s.number)) {
         const passengerInfo = data.passengers?.find(p => p.seatNumber === s.number);
         const pName = passengerInfo?.name || data.name;
@@ -180,7 +324,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         return {
           ...s,
-          status: 'booked',
+          status: targetSeatStatus,
           gender: pGender,
           passengerName: pName,
           bookedBy: {
@@ -192,50 +336,78 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
       return s;
-    }));
+    });
+
+    // Optimistic UI updates
+    setBookings(prev => [newBooking, ...prev]);
+    setSeats(updatedSeats);
+
+    // Save to Firestore in real-time
+    setDoc(doc(db, 'tour_bookings', newBooking.id), sanitizeForFirestore(newBooking)).catch(console.error);
+    setDoc(doc(db, 'tour_data', 'seats'), {
+      seatsList: sanitizeForFirestore(updatedSeats)
+    }).catch(console.error);
 
     return newBooking;
   };
 
   const updateBookingStatus = (id: string, status: Booking['paymentStatus']) => {
-    setBookings(prev => prev.map(b => {
+    const updatedBookings = bookings.map(b => {
       if (b.id === id) {
         return { ...b, paymentStatus: status };
       }
       return b;
-    }));
+    });
+    setBookings(updatedBookings);
 
-    // If cancelled, release seats
-    if (status === 'বাতিল') {
-      const target = bookings.find(b => b.id === id);
-      if (target) {
-        setSeats(prev => prev.map(s => {
-          if (target.seatNumbers.includes(s.number)) {
-            return { ...s, status: 'available', gender: undefined, passengerName: undefined, bookedBy: undefined };
+    setDoc(doc(db, 'tour_bookings', id), { paymentStatus: status }, { merge: true }).catch(console.error);
+
+    // Update seat statuses according to booking status
+    const target = bookings.find(b => b.id === id);
+    if (target) {
+      const updatedSeats = seats.map(s => {
+        if (target.seatNumbers.includes(s.number)) {
+          if (status === 'বাতিল') {
+            return { ...s, status: 'available' as const, gender: undefined, passengerName: undefined, bookedBy: undefined };
+          } else if (status === 'নিশ্চিত') {
+            return { ...s, status: 'booked' as const };
+          } else if (status === 'অপেক্ষমাণ') {
+            return { ...s, status: 'reserved' as const };
           }
-          return s;
-        }));
-      }
+        }
+        return s;
+      });
+      setSeats(updatedSeats);
+      setDoc(doc(db, 'tour_data', 'seats'), {
+        seatsList: sanitizeForFirestore(updatedSeats)
+      }).catch(console.error);
     }
   };
 
-  const confirmTicket = (id: string) => {
+  const confirmTicket = (id: string, details?: { paidAmount?: number; paymentMethod?: Booking['paymentMethod']; trxId?: string }) => {
     const target = bookings.find(b => b.id === id);
     if (!target) return;
 
-    setBookings(prev => prev.map(b => {
+    const paidAmt = details?.paidAmount !== undefined ? details.paidAmount : target.totalAmount;
+    const method = details?.paymentMethod || target.paymentMethod || 'Cash';
+    const trx = details?.trxId || target.trxId || `CONFIRMED-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const updatedBookings = bookings.map(b => {
       if (b.id === id) {
         return {
           ...b,
-          paymentStatus: 'নিশ্চিত',
-          paidAmount: b.totalAmount, // Mark fully paid on confirmation
+          paymentStatus: 'নিশ্চিত' as const,
+          paidAmount: paidAmt,
+          paymentMethod: method,
+          trxId: trx,
         };
       }
       return b;
-    }));
+    });
+    setBookings(updatedBookings);
 
-    // Ensure seats are locked as booked with gender info
-    setSeats(prev => prev.map(s => {
+    // Update seat locked state
+    const updatedSeats = seats.map(s => {
       if (target.seatNumbers.includes(s.number)) {
         const passengerInfo = target.passengers?.find(p => p.seatNumber === s.number);
         const pName = passengerInfo?.name || target.name;
@@ -244,7 +416,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         return {
           ...s,
-          status: 'booked',
+          status: 'booked' as const,
           gender: pGender,
           passengerName: pName,
           bookedBy: {
@@ -256,33 +428,50 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
       return s;
-    }));
+    });
+    setSeats(updatedSeats);
+
+    setDoc(doc(db, 'tour_bookings', id), {
+      paymentStatus: 'নিশ্চিত',
+      paidAmount: paidAmt,
+      paymentMethod: method,
+      trxId: trx,
+    }, { merge: true }).catch(console.error);
+
+    setDoc(doc(db, 'tour_data', 'seats'), {
+      seatsList: sanitizeForFirestore(updatedSeats)
+    }).catch(console.error);
   };
 
   const toggleCheckIn = (id: string) => {
-    setBookings(prev => prev.map(b => {
-      if (b.id === id) {
-        return { ...b, checkedIn: !b.checkedIn };
-      }
-      return b;
-    }));
+    const target = bookings.find(b => b.id === id);
+    if (!target) return;
+    const newChecked = !target.checkedIn;
+
+    setBookings(prev => prev.map(b => (b.id === id ? { ...b, checkedIn: newChecked } : b)));
+    setDoc(doc(db, 'tour_bookings', id), { checkedIn: newChecked }, { merge: true }).catch(console.error);
   };
 
   const deleteBooking = (id: string) => {
     const target = bookings.find(b => b.id === id);
     if (target) {
-      setSeats(prev => prev.map(s => {
+      const updatedSeats = seats.map(s => {
         if (target.seatNumbers.includes(s.number)) {
-          return { ...s, status: 'available', bookedBy: undefined };
+          return { ...s, status: 'available' as const, gender: undefined, passengerName: undefined, bookedBy: undefined };
         }
         return s;
-      }));
+      });
+      setSeats(updatedSeats);
+      setDoc(doc(db, 'tour_data', 'seats'), {
+        seatsList: sanitizeForFirestore(updatedSeats)
+      }).catch(console.error);
     }
     setBookings(prev => prev.filter(b => b.id !== id));
+    deleteDoc(doc(db, 'tour_bookings', id)).catch(console.error);
   };
 
   const setSeatStatus = (seatId: number, status: Seat['status']) => {
-    setSeats(prev => prev.map(s => {
+    const updatedSeats = seats.map(s => {
       if (s.id === seatId || s.number === seatId) {
         return {
           ...s,
@@ -293,59 +482,75 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         };
       }
       return s;
-    }));
+    });
+
+    setSeats(updatedSeats);
+    setDoc(doc(db, 'tour_data', 'seats'), {
+      seatsList: sanitizeForFirestore(updatedSeats)
+    }).catch(console.error);
   };
 
   const unbookSeat = (seatNumber: number) => {
     // 1. Release seat in seats array
-    setSeats(prev => prev.map(s => {
+    const updatedSeats = seats.map(s => {
       if (s.number === seatNumber || s.id === seatNumber) {
         return {
           ...s,
-          status: 'available',
+          status: 'available' as const,
           gender: undefined,
           passengerName: undefined,
           bookedBy: undefined,
         };
       }
       return s;
-    }));
-
-    // 2. Adjust or remove associated booking
-    setBookings(prev => {
-      const updated: Booking[] = [];
-      for (const b of prev) {
-        if (b.seatNumbers.includes(seatNumber)) {
-          const remainingSeats = b.seatNumbers.filter(n => n !== seatNumber);
-          if (remainingSeats.length > 0) {
-            const seatObj = seats.find(s => s.number === seatNumber);
-            const remainingLabels = b.seatLabels.filter(lbl => lbl !== seatObj?.label && lbl !== `${seatNumber}`);
-            const remainingPassengers = b.passengers?.filter(p => p.seatNumber !== seatNumber);
-            const newTotal = remainingSeats.length * settings.pricePerPerson;
-            updated.push({
-              ...b,
-              seatNumbers: remainingSeats,
-              seatLabels: remainingLabels,
-              passengers: remainingPassengers,
-              totalAmount: newTotal,
-              paidAmount: Math.min(b.paidAmount, newTotal),
-            });
-          }
-          // If no remaining seats, the booking is removed / unbooked
-        } else {
-          updated.push(b);
-        }
-      }
-      return updated;
     });
+    setSeats(updatedSeats);
+    setDoc(doc(db, 'tour_data', 'seats'), {
+      seatsList: sanitizeForFirestore(updatedSeats)
+    }).catch(console.error);
+
+    // 2. Adjust or remove associated booking in Firestore
+    const updatedBookings: Booking[] = [];
+    for (const b of bookings) {
+      if (b.seatNumbers.includes(seatNumber)) {
+        const remainingSeats = b.seatNumbers.filter(n => n !== seatNumber);
+        if (remainingSeats.length > 0) {
+          const seatObj = seats.find(s => s.number === seatNumber);
+          const remainingLabels = b.seatLabels.filter(lbl => lbl !== seatObj?.label && lbl !== `${seatNumber}`);
+          const remainingPassengers = b.passengers?.filter(p => p.seatNumber !== seatNumber);
+          const newTotal = remainingSeats.length * settings.pricePerPerson;
+          const updatedB: Booking = {
+            ...b,
+            seatNumbers: remainingSeats,
+            seatLabels: remainingLabels,
+            passengers: remainingPassengers,
+            totalAmount: newTotal,
+            paidAmount: Math.min(b.paidAmount, newTotal),
+          };
+          updatedBookings.push(updatedB);
+          setDoc(doc(db, 'tour_bookings', b.id), sanitizeForFirestore(updatedB)).catch(console.error);
+        } else {
+          // All seats unbooked -> remove booking doc
+          deleteDoc(doc(db, 'tour_bookings', b.id)).catch(console.error);
+        }
+      } else {
+        updatedBookings.push(b);
+      }
+    }
+    setBookings(updatedBookings);
   };
 
   const resetAllSeats = () => {
-    setSeats(generateInitialSeats());
+    const freshSeats = generateInitialSeats();
+    setSeats(freshSeats);
+    setDoc(doc(db, 'tour_data', 'seats'), {
+      seatsList: sanitizeForFirestore(freshSeats)
+    }).catch(console.error);
   };
 
   const resetAllDataToZero = () => {
-    setSeats(generateInitialSeats());
+    const freshSeats = generateInitialSeats();
+    setSeats(freshSeats);
     setBookings([]);
     setInterestedLeads([]);
     setExpenses([]);
@@ -353,6 +558,15 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('th_v4_seats');
     localStorage.removeItem('th_v4_leads');
     localStorage.removeItem('th_v4_expenses');
+
+    // Reset Firestore documents
+    setDoc(doc(db, 'tour_data', 'seats'), {
+      seatsList: sanitizeForFirestore(freshSeats)
+    }).catch(console.error);
+
+    bookings.forEach(b => deleteDoc(doc(db, 'tour_bookings', b.id)).catch(console.error));
+    interestedLeads.forEach(l => deleteDoc(doc(db, 'tour_leads', l.id)).catch(console.error));
+    expenses.forEach(e => deleteDoc(doc(db, 'tour_expenses', e.id)).catch(console.error));
   };
 
   const addInterestedLead = (lead: Omit<InterestedLead, 'id' | 'date' | 'status'>) => {
@@ -363,6 +577,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
       status: 'নতুন'
     };
     setInterestedLeads(prev => [newLead, ...prev]);
+    setDoc(doc(db, 'tour_leads', newLead.id), sanitizeForFirestore(newLead)).catch(console.error);
   };
 
   const updateLeadStatus = (id: string, status: InterestedLead['status'], notes?: string) => {
@@ -372,10 +587,15 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return l;
     }));
+    setDoc(doc(db, 'tour_leads', id), {
+      status,
+      notes: notes !== undefined ? notes : ''
+    }, { merge: true }).catch(console.error);
   };
 
   const deleteLead = (id: string) => {
     setInterestedLeads(prev => prev.filter(l => l.id !== id));
+    deleteDoc(doc(db, 'tour_leads', id)).catch(console.error);
   };
 
   const addExpense = (expense: Omit<ExpenseItem, 'id'>) => {
@@ -384,10 +604,12 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
       id: `exp_${Date.now()}`
     };
     setExpenses(prev => [newExp, ...prev]);
+    setDoc(doc(db, 'tour_expenses', newExp.id), sanitizeForFirestore(newExp)).catch(console.error);
   };
 
   const deleteExpense = (id: string) => {
     setExpenses(prev => prev.filter(e => e.id !== id));
+    deleteDoc(doc(db, 'tour_expenses', id)).catch(console.error);
   };
 
   const addAnnouncement = (announcement: Omit<Announcement, 'id' | 'date'>) => {
@@ -397,10 +619,12 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
       date: new Date().toISOString().split('T')[0]
     };
     setAnnouncements(prev => [newAnc, ...prev]);
+    setDoc(doc(db, 'tour_announcements', newAnc.id), sanitizeForFirestore(newAnc)).catch(console.error);
   };
 
   const deleteAnnouncement = (id: string) => {
     setAnnouncements(prev => prev.filter(a => a.id !== id));
+    deleteDoc(doc(db, 'tour_announcements', id)).catch(console.error);
   };
 
   // Calculate statistics

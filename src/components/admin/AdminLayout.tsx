@@ -31,7 +31,11 @@ import {
   RotateCcw,
   Sparkles,
   CheckCircle2,
-  X
+  X,
+  Clock,
+  MessageCircle,
+  PhoneCall,
+  Check
 } from 'lucide-react';
 import { Booking, SeatStatus, ExpenseItem, Announcement } from '../../types';
 
@@ -104,6 +108,52 @@ export const AdminLayout: React.FC = () => {
 
   // Reset to Zero Confirmation Dialog
   const [showResetZeroModal, setShowResetZeroModal] = useState(false);
+
+  // Offline Booking Confirmation Modal State
+  const [confirmModalTarget, setConfirmModalTarget] = useState<Booking | null>(null);
+  const [confirmPaidAmount, setConfirmPaidAmount] = useState<number>(0);
+  const [confirmPaymentMethod, setConfirmPaymentMethod] = useState<'bKash' | 'Nagad' | 'Rocket' | 'Bank' | 'Cash'>('bKash');
+  const [confirmTrxId, setConfirmTrxId] = useState<string>('');
+  const [confirmAdminNote, setConfirmAdminNote] = useState<string>('');
+
+  const openConfirmModal = (b: Booking) => {
+    setConfirmModalTarget(b);
+    setConfirmPaidAmount(b.totalAmount);
+    setConfirmPaymentMethod(b.paymentMethod || 'bKash');
+    setConfirmTrxId(b.trxId && b.trxId !== 'অফলাইন-পেমেন্ট' ? b.trxId : '');
+    setConfirmAdminNote('');
+  };
+
+  const handleExecuteConfirm = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!confirmModalTarget) return;
+
+    confirmTicket(confirmModalTarget.id, {
+      paidAmount: Number(confirmPaidAmount) || confirmModalTarget.totalAmount,
+      paymentMethod: confirmPaymentMethod,
+      trxId: confirmTrxId.trim() || `OFFLINE-${Math.floor(1000 + Math.random() * 9000)}`
+    });
+
+    showToast(`বুকিং #${confirmModalTarget.bookingCode} (${confirmModalTarget.name}) সফলভাবে কনফার্ম করা হয়েছে!`);
+    setConfirmModalTarget(null);
+  };
+
+  const openAdminWhatsApp = (b: Booking) => {
+    const rawNum = b.phone.replace(/[^0-9]/g, '');
+    const cleanPhone = rawNum.startsWith('88') 
+      ? rawNum 
+      : (rawNum.startsWith('0') ? `88${rawNum}` : `880${rawNum}`);
+    
+    const msg = `আসসালামু আলাইকুম ${b.name} ভাই/আপু, আপনার টাঙ্গুয়ার হাওর ট্যুর ২০২৬ এর সিট বুকিং রিকোয়েস্ট (আইডি: ${b.bookingCode}) পেয়েছি। 
+💺 আসন (${b.seatNumbers.length}টি): ${b.seatLabels.join(', ')}
+💰 মোট ফি: ৳${b.totalAmount.toLocaleString('bn-BD')} টাকা
+📍 বোর্ডিং পয়েন্ট: ${b.boardingPoint}
+🍽️ খাবার: ${b.dietaryPreference}
+
+অফলাইন পেমেন্ট গ্রহণ ও টিকিট নিশ্চিতকরণের জন্য যোগাযোগ করছি।`;
+
+    window.open(`https://wa.me/${cleanPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
 
   // Expense modal state
   const [newExpCat, setNewExpCat] = useState<ExpenseItem['category']>('খাবার');
@@ -182,7 +232,7 @@ export const AdminLayout: React.FC = () => {
   // Login handler
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginPasscode === 'admin123' || loginPasscode === '2026' || loginPasscode.trim().toLowerCase() === 'admin') {
+    if (loginPasscode === 'Belayetanha#2004' || loginPasscode === 'admin123' || loginPasscode === '2026') {
       setIsAdminLoggedIn(true);
       setLoginError(false);
     } else {
@@ -196,8 +246,13 @@ export const AdminLayout: React.FC = () => {
       <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-slate-900 border border-emerald-500/30 rounded-3xl p-8 shadow-2xl space-y-6">
           <div className="text-center space-y-2">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-slate-950 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
-              <ShieldCheck className="w-7 h-7" />
+            <div className="w-16 h-16 rounded-2xl bg-white p-1 shadow-lg border border-slate-700 flex items-center justify-center mx-auto overflow-hidden">
+              <img 
+                src="https://www.belayet.pro.bd/wp-content/uploads/2026/08/ChatGPT-Image-Aug-25-2026-05_46_12-PM.png"
+                alt="Admin Logo"
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover rounded-xl"
+              />
             </div>
             <h2 className="text-2xl font-bold font-sans text-white">অ্যাডমিন প্রবেশদ্বার</h2>
             <p className="text-xs text-slate-400">টাঙ্গুয়ার হাওর ট্যুর ম্যানেজমেন্ট ও টিকেট পোর্টাল</p>
@@ -210,7 +265,7 @@ export const AdminLayout: React.FC = () => {
                 type="password"
                 required
                 id="admin-passcode-input"
-                placeholder="পাসকোড লিখুন (যেমন: admin)"
+                placeholder="পাসকোড লিখুন"
                 value={loginPasscode}
                 onChange={(e) => {
                   setLoginPasscode(e.target.value);
@@ -219,7 +274,7 @@ export const AdminLayout: React.FC = () => {
                 className="w-full px-4 py-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
               />
               {loginError && (
-                <span className="text-xs text-rose-400 block pt-1">সঠিক পাসকোড লিখুন (ডিফল্ট: admin)</span>
+                <span className="text-xs text-rose-400 block pt-1">সঠিক পাসকোড লিখুন</span>
               )}
             </div>
 
@@ -246,11 +301,15 @@ export const AdminLayout: React.FC = () => {
     );
   }
 
+  // Pending booking requests count
+  const pendingRequests = bookings.filter(b => b.paymentStatus === 'অপেক্ষমাণ');
+
   // Navigation menu items for Admin
   const adminMenuItems = [
     { name: 'ড্যাশবোর্ড', icon: LayoutDashboard },
-    { name: 'ট্যুর ব্যবস্থাপনা', icon: Calendar },
+    { name: 'বুকিং রিকোয়েস্ট ও অনুমোদন', icon: Clock, badge: pendingRequests.length },
     { name: 'বুকিং', icon: Ticket, badge: bookings.length },
+    { name: 'ট্যুর ব্যবস্থাপনা', icon: Calendar },
     { name: 'অংশগ্রহণকারী', icon: Users, badge: stats.confirmedBookings },
     { name: 'সিট ব্যবস্থাপনা', icon: Armchair },
     { name: 'পেমেন্ট', icon: CreditCard },
@@ -296,8 +355,13 @@ export const AdminLayout: React.FC = () => {
           {/* Top Brand */}
           <div className="p-6 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-slate-950 flex items-center justify-center font-bold shadow-md">
-                <ShieldCheck className="w-6 h-6 text-slate-950" />
+              <div className="w-11 h-11 rounded-2xl bg-white p-0.5 border border-slate-700 shadow-md overflow-hidden flex items-center justify-center">
+                <img 
+                  src="https://www.belayet.pro.bd/wp-content/uploads/2026/08/ChatGPT-Image-Aug-25-2026-05_46_12-PM.png"
+                  alt="Admin Logo"
+                  referrerPolicy="no-referrer"
+                  className="w-full h-full object-cover rounded-xl"
+                />
               </div>
               <div>
                 <h3 className="font-bold text-white text-base font-sans leading-tight">টাঙ্গুয়ার অ্যাডমিন</h3>
@@ -406,6 +470,32 @@ export const AdminLayout: React.FC = () => {
         {/* ========================================================================= */}
         {activeTab === 'ড্যাশবোর্ড' && (
           <div className="space-y-8">
+
+            {/* Offline Pending Booking Alert Notice */}
+            {pendingRequests.length > 0 && (
+              <div className="bg-gradient-to-r from-amber-950/80 via-amber-900/60 to-slate-900 border-2 border-amber-500/50 rounded-3xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl animate-in fade-in duration-200">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+                    <Clock className="w-6 h-6 animate-pulse" />
+                  </div>
+                  <div>
+                    <h4 className="text-base font-bold text-amber-200">
+                      {pendingRequests.length} টি অপেক্ষমাণ বুকিং রিকোয়েস্ট রয়েছে!
+                    </h4>
+                    <p className="text-xs text-amber-300/80 mt-0.5">
+                      যাত্রীরা ওয়েবসাইট থেকে সিট রিকোয়েস্ট পাঠিয়েছেন। অফলাইন পেমেন্ট যাচাই করে এক ক্লিকে কনফার্ম করুন।
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setActiveTab('বুকিং রিকোয়েস্ট ও অনুমোদন')}
+                  className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg flex items-center gap-2 transition-transform active:scale-95 shrink-0"
+                >
+                  <span>অনুমোদন ড্যাশবোর্ড খুলুন ({pendingRequests.length})</span>
+                  <ArrowLeft className="w-4 h-4 rotate-180" />
+                </button>
+              </div>
+            )}
             
             {/* Top Statistics Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -532,12 +622,9 @@ export const AdminLayout: React.FC = () => {
                               <div className="flex items-center justify-end gap-1.5">
                                 {b.paymentStatus === 'অপেক্ষমাণ' && (
                                   <button
-                                    onClick={() => {
-                                      confirmTicket(b.id);
-                                      showToast(`বুকিং #${b.bookingCode} নিশ্চিত করা হয়েছে!`);
-                                    }}
+                                    onClick={() => openConfirmModal(b)}
                                     className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[11px] font-bold shadow-sm transition-colors flex items-center gap-1"
-                                    title="টিকিট নিশ্চিত করুন"
+                                    title="অফলাইন পেমেন্ট যাচাই করে টিকিট নিশ্চিত করুন"
                                   >
                                     <CheckCircle className="w-3 h-3" />
                                     <span>কনফার্ম</span>
@@ -611,6 +698,185 @@ export const AdminLayout: React.FC = () => {
               </div>
 
             </div>
+
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* NEW TAB: বুকিং রিকোয়েস্ট ও অনুমোদন (OFFLINE BOOKING REQUESTS & APPROVAL) */}
+        {/* ========================================================================= */}
+        {activeTab === 'বুকিং রিকোয়েস্ট ও অনুমোদন' && (
+          <div className="space-y-6">
+            
+            {/* Header & Overview Stats */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900/90 p-5 rounded-3xl border border-slate-800">
+              <div>
+                <h3 className="text-xl font-bold text-white font-sans flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-amber-400" />
+                  <span>অফলাইন বুকিং রিকোয়েস্ট ও অনুমোদন কেন্দ্র</span>
+                </h3>
+                <p className="text-xs text-slate-400 mt-1">
+                  ওয়েবসাইট থেকে ব্যবহারকারীদের পাঠানো সকল বুকিং রিকোয়েস্টের তালিকা ও সরাসরি WhatsApp/ফোন যাচাইকরণ।
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="px-3.5 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold font-mono">
+                  অপেক্ষমাণ: {pendingRequests.length} টি
+                </span>
+                <span className="px-3.5 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold font-mono">
+                  মোট আসন: {pendingRequests.reduce((acc, b) => acc + b.seatNumbers.length, 0)} টি
+                </span>
+              </div>
+            </div>
+
+            {/* List of Pending Requests */}
+            {pendingRequests.length === 0 ? (
+              <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-12 text-center space-y-3">
+                <div className="w-16 h-16 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+                <h4 className="text-lg font-bold text-white">বর্তমানে কোনো অপেক্ষমাণ বুকিং রিকোয়েস্ট নেই!</h4>
+                <p className="text-xs text-slate-400 max-w-md mx-auto">
+                  সব রিকোয়েস্ট অনুমোদিত বা নিশ্চিত হয়ে গেছে। নতুন কোনো ভিজিটর ওয়েবসাইট থেকে রিকোয়েস্ট পাঠালে সাথে সাথে এখানে যুক্ত হবে।
+                </p>
+                <button
+                  onClick={() => setActiveTab('বুকিং')}
+                  className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold"
+                >
+                  সকল বুকিং তালিকা দেখুন
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {pendingRequests.map((b) => (
+                  <div 
+                    key={b.id} 
+                    className="bg-slate-900/95 border-2 border-amber-500/40 rounded-3xl p-5 space-y-4 shadow-xl relative overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 bg-amber-500 text-slate-950 text-[10px] font-extrabold px-3 py-0.5 rounded-bl-xl uppercase font-mono tracking-wider">
+                      অপেক্ষমাণ রিকোয়েস্ট
+                    </div>
+
+                    {/* Top Row */}
+                    <div className="flex items-start justify-between pr-24">
+                      <div>
+                        <span className="text-[11px] font-mono text-emerald-400 font-bold block">
+                          আইডি: #{b.bookingCode}
+                        </span>
+                        <h4 className="text-base font-bold text-white font-sans mt-0.5">
+                          {b.name} <span className="text-xs text-slate-400 font-normal">({b.gender})</span>
+                        </h4>
+                      </div>
+                    </div>
+
+                    {/* Information Grid */}
+                    <div className="grid grid-cols-2 gap-2.5 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 text-xs">
+                      <div>
+                        <span className="text-slate-400 text-[11px] block">মোবাইল নম্বর:</span>
+                        <strong className="text-white font-mono text-xs">{b.phone}</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-[11px] block">অনুরোধকৃত আসন ({b.seatNumbers.length}টি):</span>
+                        <strong className="text-emerald-400 font-mono text-sm">{b.seatLabels.join(', ')}</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-[11px] block">বোর্ডিং পয়েন্ট:</span>
+                        <span className="text-slate-300 text-[11px] font-medium">{b.boardingPoint}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-[11px] block">মোট প্রদেয় অর্থ:</span>
+                        <strong className="text-amber-300 font-bold text-sm">৳{b.totalAmount.toLocaleString('bn-BD')} টাকা</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-[11px] block">পছন্দের মাধ্যম:</span>
+                        <span className="text-slate-200 font-semibold">{b.paymentMethod || 'bKash'}</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 text-[11px] block">খাবারের মেন্যু:</span>
+                        <span className="text-slate-200 font-semibold">{b.dietaryPreference}</span>
+                      </div>
+                    </div>
+
+                    {/* User Note if provided */}
+                    {b.notes && (
+                      <div className="bg-slate-950/50 p-2.5 rounded-xl border border-slate-800 text-xs text-slate-300">
+                        <span className="text-slate-500 font-semibold text-[10px] block">যাত্রীর মন্তব্য/নোট:</span>
+                        <p className="italic text-[11px]">"{b.notes}"</p>
+                      </div>
+                    )}
+
+                    {/* Extra Passengers info if multiple seats */}
+                    {b.passengers && b.passengers.length > 1 && (
+                      <div className="space-y-1 text-xs">
+                        <span className="text-slate-400 font-semibold text-[11px] block">
+                          সহযাত্রী তালিকা ({b.passengers.length - 1} জন):
+                        </span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {b.passengers.slice(1).map((p, idx) => (
+                            <span key={idx} className="bg-slate-800 px-2 py-0.5 rounded-lg text-slate-300 text-[11px] border border-slate-700">
+                              {p.name} ({p.seatLabel})
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-800">
+                      
+                      {/* WhatsApp Chat */}
+                      <button
+                        type="button"
+                        onClick={() => openAdminWhatsApp(b)}
+                        className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600/20 hover:bg-emerald-600 text-emerald-300 hover:text-white border border-emerald-500/30 text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
+                        title="WhatsApp এ বার্তা পাঠান"
+                      >
+                        <MessageCircle className="w-4 h-4 text-emerald-400" />
+                        <span>WhatsApp এ নক দিন</span>
+                      </button>
+
+                      {/* Phone Call */}
+                      <a
+                        href={`tel:${b.phone}`}
+                        className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                        title="সরাসরি কল দিন"
+                      >
+                        <PhoneCall className="w-3.5 h-3.5 text-slate-400" />
+                        <span>কল দিন</span>
+                      </a>
+
+                      {/* Confirm & Issue Ticket Button */}
+                      <button
+                        type="button"
+                        onClick={() => openConfirmModal(b)}
+                        className="w-full sm:w-auto flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                        <span>বুকিং কনফার্ম ও অনুমোদন</span>
+                      </button>
+
+                      {/* Cancel / Reject */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`আপনি কি নিশ্চিত যে বুকিং #${b.bookingCode} বাতিল করবেন? এর ফলে সিটগুলো খালি হয়ে যাবে।`)) {
+                            updateBookingStatus(b.id, 'বাতিল');
+                            showToast(`বুকিং #${b.bookingCode} বাতিল করা হয়েছে ও সিট মুক্ত করা হয়েছে।`);
+                          }
+                        }}
+                        className="p-2.5 rounded-xl bg-rose-950/40 hover:bg-rose-900 text-rose-300 border border-rose-800/40 text-xs transition-colors"
+                        title="রিকোয়েস্ট বাতিল করুন"
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
+
+                    </div>
+
+                  </div>
+                ))}
+              </div>
+            )}
 
           </div>
         )}
@@ -736,17 +1002,23 @@ export const AdminLayout: React.FC = () => {
                             <td className="p-4 text-right">
                               <div className="flex items-center justify-end gap-1.5">
                                 {b.paymentStatus === 'অপেক্ষমাণ' ? (
-                                  <button
-                                    onClick={() => {
-                                      confirmTicket(b.id);
-                                      showToast(`টিকিট #${b.bookingCode} সফলভাবে কনফার্ম করা হয়েছে!`);
-                                    }}
-                                    className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md flex items-center gap-1 transition-transform active:scale-95"
-                                    title="টিকিট নিশ্চিত ও পূর্ণ পেমেন্ট করুন"
-                                  >
-                                    <CheckCircle className="w-3.5 h-3.5 text-white" />
-                                    <span>কনফার্ম করুন</span>
-                                  </button>
+                                  <div className="flex items-center gap-1.5">
+                                    <button
+                                      onClick={() => openAdminWhatsApp(b)}
+                                      className="p-1.5 rounded-lg bg-emerald-700/40 hover:bg-emerald-700 text-emerald-300 hover:text-white border border-emerald-600/40 transition-colors"
+                                      title="WhatsApp এ গ্রাহকের সাথে চ্যাট খুলুন"
+                                    >
+                                      <MessageCircle className="w-3.5 h-3.5" />
+                                    </button>
+                                    <button
+                                      onClick={() => openConfirmModal(b)}
+                                      className="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md flex items-center gap-1 transition-transform active:scale-95"
+                                      title="অফলাইন পেমেন্ট যাচাই ও টিকিট কনফার্ম করুন"
+                                    >
+                                      <CheckCircle className="w-3.5 h-3.5 text-white" />
+                                      <span>কনফার্ম করুন</span>
+                                    </button>
+                                  </div>
                                 ) : (
                                   <button
                                     onClick={() => {
@@ -846,14 +1118,6 @@ export const AdminLayout: React.FC = () => {
                       <Plus className="w-4 h-4" />
                       <span>+ সিট বুক করুন (বুকিং উইন্ডো)</span>
                     </button>
-                    <button
-                      onClick={resetAllSeats}
-                      className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1.5 transition-colors"
-                      title="সমস্ত সিট পুনরায় খালি ও ডিফল্ট করুন"
-                    >
-                      <RotateCcw className="w-3.5 h-3.5" />
-                      <span>ডিফল্ট সিট রিস্টোর</span>
-                    </button>
                   </div>
                 </div>
 
@@ -936,143 +1200,234 @@ export const AdminLayout: React.FC = () => {
                   ))}
                 </div>
 
-                {/* 40 Seats Grid View with Male/Female Indicators */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-8 gap-3 pt-2">
-                  {filteredSeats.map((seat) => {
-                    const isBooked = seat.status === 'booked';
-                    const isReserved = seat.status === 'reserved';
-                    const isAvail = seat.status === 'available';
+                {/* Bus Front Steering Cabin Indicator */}
+                <div className="py-2.5 px-4 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                  <span className="flex items-center gap-1.5 font-bold text-slate-300">
+                    🚍 ড্রাইভার কেবিন (সামনের অংশ)
+                  </span>
+                  <span>← বাম পাশ | গলি | ডান পাশ →</span>
+                </div>
 
-                    const seatGender = seat.gender || seat.bookedBy?.gender;
-                    const isFemale = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
-                    const isMale = isBooked && (!isFemale);
-                    const passengerName = seat.passengerName || seat.bookedBy?.name;
+                {/* 40 Seats Bus Layout View */}
+                <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
+                  {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].map((rowLetter, rowIndex) => {
+                    const allRowSeats = seats.slice(rowIndex * 4, (rowIndex + 1) * 4);
+                    const leftPair = allRowSeats.slice(0, 2);
+                    const rightPair = allRowSeats.slice(2, 4);
+
+                    const matchesFilter = (seat: any) => {
+                      if (seatGenderFilter === 'all') return true;
+                      const isBooked = seat.status === 'booked';
+                      const isReserved = seat.status === 'reserved';
+                      const seatGender = seat.gender || seat.bookedBy?.gender;
+                      const isFemale = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
+                      const isMale = isBooked && !isFemale;
+
+                      if (seatGenderFilter === 'male') return isMale;
+                      if (seatGenderFilter === 'female') return isFemale;
+                      if (seatGenderFilter === 'available') return seat.status === 'available';
+                      if (seatGenderFilter === 'reserved') return isReserved;
+                      return true;
+                    };
+
+                    const rowHasVisibleSeat = allRowSeats.some(matchesFilter);
+                    if (!rowHasVisibleSeat && seatGenderFilter !== 'all') return null;
 
                     return (
-                      <div
-                        key={seat.id}
-                        className={`p-3.5 rounded-2xl border transition-all flex flex-col justify-between relative overflow-hidden ${
-                          isFemale
-                            ? 'bg-slate-950/90 border-rose-500/50 shadow-md shadow-rose-950/30'
-                            : isMale
-                            ? 'bg-slate-950/90 border-sky-500/50 shadow-md shadow-sky-950/30'
-                            : isReserved
-                            ? 'bg-slate-950/90 border-amber-500/50'
-                            : 'bg-slate-950/60 border-slate-800/80 hover:border-emerald-500/40'
-                        }`}
-                      >
-                        {/* Top Indicator & Label */}
-                        <div className="flex items-center justify-between">
-                          <span className="text-base font-bold font-mono text-white">
-                            {seat.label}
-                          </span>
-                          
-                          {isFemale ? (
-                            <span className="px-1.5 py-0.5 rounded-md bg-rose-500/20 text-rose-300 text-[10px] font-bold flex items-center gap-0.5">
-                              <span>👩</span>
-                              <span>নারী</span>
-                            </span>
-                          ) : isMale ? (
-                            <span className="px-1.5 py-0.5 rounded-md bg-sky-500/20 text-sky-300 text-[10px] font-bold flex items-center gap-0.5">
-                              <span>👨</span>
-                              <span>পুরুষ</span>
-                            </span>
-                          ) : isReserved ? (
-                            <span className="px-1.5 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-bold">
-                              🔒 সংরক্ষিত
-                            </span>
-                          ) : (
-                            <span className="px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
-                              🟢 খালি
-                            </span>
-                          )}
+                      <div key={rowLetter} className="flex items-center justify-between gap-3 bg-slate-950/60 p-3 rounded-2xl border border-slate-800/80">
+                        <span className="w-6 text-center font-bold text-slate-400 font-mono text-sm">{rowLetter}</span>
+                        
+                        {/* Left Pair */}
+                        <div className="flex gap-2 flex-1 justify-end">
+                          {leftPair.map(seat => {
+                            const isBooked = seat.status === 'booked';
+                            const isReserved = seat.status === 'reserved';
+                            const seatGender = seat.gender || seat.bookedBy?.gender;
+                            const isFemale = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
+                            const isMale = isBooked && !isFemale;
+                            const passengerName = seat.passengerName || seat.bookedBy?.name;
+                            const visible = matchesFilter(seat);
+
+                            if (!visible && seatGenderFilter !== 'all') {
+                              return <div key={seat.id} className="w-36 h-20 opacity-20 bg-slate-900/40 rounded-xl flex items-center justify-center text-[10px] text-slate-600">লুকানো</div>;
+                            }
+
+                            return (
+                              <div 
+                                key={seat.id}
+                                className={`p-2.5 rounded-xl border flex flex-col justify-between w-38 sm:w-44 ${
+                                  isFemale ? 'bg-rose-950/40 border-rose-500/50' :
+                                  isMale ? 'bg-sky-950/40 border-sky-500/50' :
+                                  isReserved ? 'bg-amber-950/40 border-amber-500/50' :
+                                  'bg-slate-900 border-slate-800'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="font-bold text-white font-mono">{seat.label}</span>
+                                  {isFemale ? (
+                                    <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold">👩 নারী</span>
+                                  ) : isMale ? (
+                                    <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[10px] font-bold">👨 পুরুষ</span>
+                                  ) : isReserved ? (
+                                    <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">⏳ অপেক্ষমাণ</span>
+                                  ) : (
+                                    <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">🟢 খালি</span>
+                                  )}
+                                </div>
+                                <div className="my-1.5 min-h-[26px]">
+                                  <span className="text-[11px] font-semibold text-slate-200 truncate block">
+                                    {passengerName || (isBooked ? 'বুকড যাত্রী' : isReserved ? 'রিকোয়েস্ট পেন্ডিং' : 'খালি আসন')}
+                                  </span>
+                                  {seat.bookedBy?.phone && (
+                                    <span className="text-[10px] text-slate-400 font-mono block">
+                                      {seat.bookedBy.phone}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="pt-1.5 border-t border-slate-800 flex gap-1">
+                                  {isBooked ? (
+                                    <button
+                                      onClick={() => setUnbookTargetSeat(seat)}
+                                      className="w-full py-1 rounded bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white text-[10px] font-bold transition-colors"
+                                    >
+                                      আনবুক করুন
+                                    </button>
+                                  ) : isReserved ? (
+                                    <>
+                                      <button
+                                        onClick={() => setUnbookTargetSeat(seat)}
+                                        className="flex-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-semibold"
+                                      >
+                                        খালি
+                                      </button>
+                                      <button
+                                        onClick={() => openBookingModal(seat.number)}
+                                        className="flex-1 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold"
+                                      >
+                                        কনফার্ম
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button
+                                        onClick={() => openBookingModal(seat.number)}
+                                        className="flex-1 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold"
+                                      >
+                                        বুক
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setSeatStatus(seat.number, 'reserved');
+                                          showToast(`সিট ${seat.label} সংরক্ষিত করা হয়েছে`);
+                                        }}
+                                        className="flex-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 text-[10px]"
+                                      >
+                                        সংরক্ষণ
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
                         </div>
 
-                        {/* Passenger Details snippet */}
-                        <div className="my-2.5 min-h-[38px] flex flex-col justify-center">
-                          {isBooked ? (
-                            <>
-                              <span className="text-xs font-semibold text-white truncate block">
-                                {passengerName || (isFemale ? 'নারী যাত্রী' : 'পুরুষ যাত্রী')}
-                              </span>
-                              {seat.bookedBy?.phone ? (
-                                <span className="text-[10px] text-slate-400 font-mono block">
-                                  {seat.bookedBy.phone}
-                                </span>
-                              ) : (
-                                <span className="text-[10px] text-emerald-400 font-mono block">
-                                  #{seat.bookedBy?.bookingId || 'কনফার্মড'}
-                                </span>
-                              )}
-                            </>
-                          ) : isReserved ? (
-                            <span className="text-[11px] text-amber-300/90 font-medium">
-                              সংরক্ষিত আসন
-                            </span>
-                          ) : (
-                            <span className="text-[11px] text-slate-400">
-                              আসনটি ফাঁকা আছে
-                            </span>
-                          )}
-                        </div>
+                        <div className="w-8 text-center text-xs font-bold text-slate-500">গলি</div>
 
-                        {/* Action buttons */}
-                        <div className="pt-2 border-t border-slate-800/80 flex items-center gap-1.5">
-                          {isBooked ? (
-                            <button
-                              type="button"
-                              onClick={() => setUnbookTargetSeat(seat)}
-                              className="w-full py-1.5 px-2 rounded-xl bg-rose-500/15 hover:bg-rose-600 text-rose-300 hover:text-white text-[11px] font-bold border border-rose-500/30 flex items-center justify-center gap-1 transition-all active:scale-95"
-                              title="আসনটির বুকিং বাতিল / আনবুক করুন"
-                            >
-                              <RotateCcw className="w-3 h-3" />
-                              <span>আনবুক করুন</span>
-                            </button>
-                          ) : isReserved ? (
-                            <div className="grid grid-cols-2 gap-1 w-full">
-                              <button
-                                type="button"
-                                onClick={() => setUnbookTargetSeat(seat)}
-                                className="py-1 px-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-semibold flex items-center justify-center"
-                                title="সংরক্ষণ বাতিল ও খালি করুন"
-                              >
-                                আনবুক
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => openBookingModal(seat.number)}
-                                className="py-1 px-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center"
-                                title="বুকিং করুন"
-                              >
-                                বুকিং
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="grid grid-cols-2 gap-1 w-full">
-                              <button
-                                type="button"
-                                onClick={() => openBookingModal(seat.number)}
-                                className="py-1.5 px-1.5 rounded-lg bg-emerald-600/90 hover:bg-emerald-500 text-white text-[10px] font-bold flex items-center justify-center gap-0.5 transition-colors"
-                                title="আসন বুক করুন"
-                              >
-                                <Plus className="w-3 h-3" />
-                                <span>বুক</span>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setSeatStatus(seat.number, 'reserved');
-                                  showToast(`সিট ${seat.label} সংরক্ষিত করা হয়েছে`);
-                                }}
-                                className="py-1.5 px-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-amber-300 text-[10px] font-semibold flex items-center justify-center"
-                                title="সংরক্ষিত হিসেবে চিহ্নিত করুন"
-                              >
-                                সংরক্ষণ
-                              </button>
-                            </div>
-                          )}
-                        </div>
+                        {/* Right Pair */}
+                        <div className="flex gap-2 flex-1 justify-start">
+                          {rightPair.map(seat => {
+                            const isBooked = seat.status === 'booked';
+                            const isReserved = seat.status === 'reserved';
+                            const seatGender = seat.gender || seat.bookedBy?.gender;
+                            const isFemale = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
+                            const isMale = isBooked && !isFemale;
+                            const passengerName = seat.passengerName || seat.bookedBy?.name;
+                            const visible = matchesFilter(seat);
 
+                            if (!visible && seatGenderFilter !== 'all') {
+                              return <div key={seat.id} className="w-36 h-20 opacity-20 bg-slate-900/40 rounded-xl flex items-center justify-center text-[10px] text-slate-600">লুকানো</div>;
+                            }
+
+                            return (
+                              <div 
+                                key={seat.id}
+                                className={`p-2.5 rounded-xl border flex flex-col justify-between w-38 sm:w-44 ${
+                                  isFemale ? 'bg-rose-950/40 border-rose-500/50' :
+                                  isMale ? 'bg-sky-950/40 border-sky-500/50' :
+                                  isReserved ? 'bg-amber-950/40 border-amber-500/50' :
+                                  'bg-slate-900 border-slate-800'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="font-bold text-white font-mono">{seat.label}</span>
+                                  {isFemale ? (
+                                    <span className="px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 text-[10px] font-bold">👩 নারী</span>
+                                  ) : isMale ? (
+                                    <span className="px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 text-[10px] font-bold">👨 পুরুষ</span>
+                                  ) : isReserved ? (
+                                    <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">⏳ অপেক্ষমাণ</span>
+                                  ) : (
+                                    <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">🟢 খালি</span>
+                                  )}
+                                </div>
+                                <div className="my-1.5 min-h-[26px]">
+                                  <span className="text-[11px] font-semibold text-slate-200 truncate block">
+                                    {passengerName || (isBooked ? 'বুকড যাত্রী' : isReserved ? 'রিকোয়েস্ট পেন্ডিং' : 'খালি আসন')}
+                                  </span>
+                                  {seat.bookedBy?.phone && (
+                                    <span className="text-[10px] text-slate-400 font-mono block">
+                                      {seat.bookedBy.phone}
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="pt-1.5 border-t border-slate-800 flex gap-1">
+                                  {isBooked ? (
+                                    <button
+                                      onClick={() => setUnbookTargetSeat(seat)}
+                                      className="w-full py-1 rounded bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white text-[10px] font-bold transition-colors"
+                                    >
+                                      আনবুক করুন
+                                    </button>
+                                  ) : isReserved ? (
+                                    <>
+                                      <button
+                                        onClick={() => setUnbookTargetSeat(seat)}
+                                        className="flex-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-semibold"
+                                      >
+                                        খালি
+                                      </button>
+                                      <button
+                                        onClick={() => openBookingModal(seat.number)}
+                                        className="flex-1 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold"
+                                      >
+                                        কনফার্ম
+                                      </button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <button
+                                        onClick={() => openBookingModal(seat.number)}
+                                        className="flex-1 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold"
+                                      >
+                                        বুক
+                                      </button>
+                                      <button
+                                        onClick={() => {
+                                          setSeatStatus(seat.number, 'reserved');
+                                          showToast(`সিট ${seat.label} সংরক্ষিত করা হয়েছে`);
+                                        }}
+                                        className="flex-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-amber-300 text-[10px]"
+                                      >
+                                        সংরক্ষণ
+                                      </button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     );
                   })}
@@ -1921,6 +2276,156 @@ export const AdminLayout: React.FC = () => {
                 <span>হ্যাঁ, আসনটি আনবুক করুন</span>
               </button>
             </div>
+
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
+      {/* OFFLINE BOOKING CONFIRMATION & APPROVAL MODAL */}
+      {/* ========================================================================= */}
+      {confirmModalTarget && (
+        <div className="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-in zoom-in-95 duration-200">
+          <div className="bg-slate-900 border border-emerald-500/40 rounded-3xl max-w-lg w-full p-6 text-white space-y-4 shadow-2xl my-auto">
+            
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+                  <CheckCircle2 className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-white font-sans">
+                    বুকিং ও টিকিট চূড়ান্ত অনুমোদন
+                  </h3>
+                  <span className="text-[11px] text-emerald-400 font-mono">
+                    কোড: #{confirmModalTarget.bookingCode}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setConfirmModalTarget(null)}
+                className="p-2 rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Passenger & Seat Summary */}
+            <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-2 text-xs">
+              <div className="flex justify-between items-center pb-1.5 border-b border-slate-800">
+                <span className="text-slate-400">প্রধান যাত্রী:</span>
+                <strong className="text-white text-sm">{confirmModalTarget.name} ({confirmModalTarget.gender})</strong>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">মোবাইল:</span>
+                <span className="font-mono text-emerald-400 font-bold">{confirmModalTarget.phone}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">বরাদ্দকৃত আসন ({confirmModalTarget.seatNumbers.length}টি):</span>
+                <span className="font-mono text-teal-300 font-bold text-sm">{confirmModalTarget.seatLabels.join(', ')}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-slate-400">বোর্ডিং পয়েন্ট:</span>
+                <span className="text-slate-300">{confirmModalTarget.boardingPoint}</span>
+              </div>
+              <div className="flex justify-between items-center pt-1.5 border-t border-slate-800">
+                <span className="text-slate-400">প্রত্যাশিত মোট ফি:</span>
+                <strong className="text-base font-bold text-emerald-400 font-sans">
+                  ৳{confirmModalTarget.totalAmount.toLocaleString('bn-BD')} টাকা
+                </strong>
+              </div>
+            </div>
+
+            {/* Form Inputs */}
+            <form onSubmit={handleExecuteConfirm} className="space-y-3.5">
+              
+              {/* Payment Method */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-300 block">
+                  প্রাপ্ত পেমেন্ট মাধ্যম *
+                </label>
+                <div className="grid grid-cols-5 gap-1.5">
+                  {(['bKash', 'Nagad', 'Rocket', 'Bank', 'Cash'] as const).map((method) => (
+                    <button
+                      key={method}
+                      type="button"
+                      onClick={() => setConfirmPaymentMethod(method)}
+                      className={`py-2 rounded-xl text-xs font-bold border transition-all ${
+                        confirmPaymentMethod === method
+                          ? 'bg-emerald-600 text-white border-emerald-500 shadow-md'
+                          : 'bg-slate-950 border-slate-800 text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {method === 'Cash' ? 'ক্যাশ' : method}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Received Amount */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-300 block">
+                  প্রাপ্ত অর্থের পরিমাণ (৳) *
+                </label>
+                <input
+                  type="number"
+                  required
+                  min={0}
+                  value={confirmPaidAmount}
+                  onChange={(e) => setConfirmPaidAmount(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono font-bold text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* TrxID / Reference */}
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-300 block">
+                  ট্রানজেকশন আইডি / রেফারেন্স (ঐচ্ছিক)
+                </label>
+                <input
+                  type="text"
+                  placeholder="যেমন: 9X8Y7Z বা CASH-01"
+                  value={confirmTrxId}
+                  onChange={(e) => setConfirmTrxId(e.target.value.toUpperCase())}
+                  className="w-full px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-white font-mono uppercase text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                />
+              </div>
+
+              {/* Quick WhatsApp Contact button in modal */}
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between">
+                <span className="text-xs text-slate-400">যাত্রীর সাথে যোগাযোগ:</span>
+                <button
+                  type="button"
+                  onClick={() => openAdminWhatsApp(confirmModalTarget)}
+                  className="px-3 py-1 rounded-lg bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600 hover:text-white border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>WhatsApp খুলুন</span>
+                </button>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmModalTarget(null)}
+                  className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+                >
+                  বাতিল
+                </button>
+
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-1.5 transition-all active:scale-95"
+                >
+                  <CheckCircle className="w-4 h-4" />
+                  <span>অনুমোদন ও টিকিট নিশ্চিত করুন</span>
+                </button>
+              </div>
+
+            </form>
 
           </div>
         </div>

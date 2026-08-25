@@ -7,21 +7,21 @@ export const FoodExperience: React.FC = () => {
       title: 'হাওরের তাটকা মাছের ঝোল ও ভুনা',
       desc: 'হাওর ও তাহিরপুর থেকে সংগৃহীত সরাসরি জীবন্ত বোয়াল, রুই বা আইড় মাছের রসালো ভুনা এবং পাতলা ঝোল।',
       icon: Fish,
-      image: 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80',
+      image: 'https://i.ytimg.com/vi/8gno-rIqzfA/maxresdefault.jpg?auto=format&fit=crop&w=600&q=80',
       tag: 'তাটকা মাছ'
     },
     {
       title: 'ঐতিহ্যবাহী দেশি হাঁসের মাংস ভুনা',
       desc: 'সিলেটি বিশেষ মসলায় কষিয়ে রান্না করা সুস্বাদু দেশি হাঁসের মাংসের রাজকীয় আয়োজন।',
       icon: Flame,
-      image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=600&q=80',
+      image: 'https://i.ytimg.com/vi/ivHlX2d0k4s/maxresdefault.jpg?auto=format&fit=crop&w=600&q=80',
       tag: 'স্পেশাল পদ'
     },
     {
       title: 'সুগন্ধি চাল, ডাল ও আলু ভর্তা',
       desc: 'গরম গরম সুবাসিত ভাত, সাথে খাঁটি ডাল এবং হরেক পদের মুখরোচক ভর্তা—খাবারে শতভাগ খাঁটি দেশীয় স্বাদ।',
       icon: Utensils,
-      image: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=600&q=80',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSHYRp6U7nJafnHwDQyZUxQd-L3BG0qQHO9V2V94JFpB03C4SZfcqxecQs&s=10?auto=format&fit=crop&w=600&q=80',
       tag: 'খাঁটি দেশি স্বাদ'
     },
     {

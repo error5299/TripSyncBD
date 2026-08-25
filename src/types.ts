@@ -51,6 +51,7 @@ export interface Booking {
   emergencyContact: string;
   dietaryPreference: 'সাধারণ' | 'হাঁসের মাংস' | 'নিরামিষ';
   bookingDate: string;
+  createdAt?: number;
   checkedIn: boolean;
   notes?: string;
 }

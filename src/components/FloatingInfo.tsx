@@ -10,7 +10,7 @@ export const FloatingInfo: React.FC = () => {
       icon: Calendar,
       title: 'ভ্রমণের সময়কাল',
       value: '২ রাত ১ দিন ডে ট্যুর',
-      subValue: 'যাত্রা: ৪ সেপ্টেম্বর ২০২৬',
+      subValue: 'যাত্রা: ৩ সেপ্টেম্বর ২০২৬',
       color: 'text-emerald-700',
       bgColor: 'bg-emerald-50',
     },
@@ -41,8 +41,8 @@ export const FloatingInfo: React.FC = () => {
   ];
 
   return (
-    <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 -mt-16 sm:-mt-20">
-      <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-2xl shadow-slate-900/10 border border-emerald-100 ring-1 ring-emerald-600/10">
+    <div className="relative z-20 max-w-6xl mx-auto px-4 sm:px-6 mt-6 sm:-mt-10 lg:-mt-14">
+      <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xl shadow-slate-900/10 border border-emerald-100 ring-1 ring-emerald-600/10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y sm:divide-y-0 lg:divide-x divide-slate-100">
           {infoItems.map((item, index) => {
             const Icon = item.icon;

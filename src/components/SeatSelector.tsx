@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTour } from '../context/TourContext';
-import { Armchair, Compass, ArrowRight, UserCheck, ShieldCheck } from 'lucide-react';
+import { Armchair, Compass, ArrowRight, UserCheck, ShieldCheck, MessageCircle } from 'lucide-react';
 import { Seat } from '../types';
 
 export const SeatSelector: React.FC = () => {
@@ -69,7 +69,7 @@ export const SeatSelector: React.FC = () => {
             </div>
 
             {/* Status Legend with Gender Indicator */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6 p-3 rounded-2xl bg-slate-50 border border-slate-100 text-xs font-semibold">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-6 p-3 rounded-2xl bg-slate-50 border border-slate-100 text-xs font-semibold">
               <div className="flex items-center gap-2 p-1.5 rounded-xl bg-white border border-slate-200 shadow-xs">
                 <div className="w-4 h-4 rounded-md bg-white border-2 border-emerald-500 shrink-0" />
                 <span className="text-slate-800">খালি ({stats.availableSeats})</span>
@@ -77,6 +77,10 @@ export const SeatSelector: React.FC = () => {
               <div className="flex items-center gap-2 p-1.5 rounded-xl bg-white border border-slate-200 shadow-xs">
                 <div className="w-4 h-4 rounded-md bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</div>
                 <span className="text-slate-800">নির্বাচিত</span>
+              </div>
+              <div className="flex items-center gap-2 p-1.5 rounded-xl bg-amber-50 border border-amber-300 shadow-xs">
+                <div className="w-4 h-4 rounded-md bg-amber-400 text-amber-950 flex items-center justify-center text-[9px] font-bold shrink-0">⏳</div>
+                <span className="text-amber-950 font-bold">অপেক্ষমাণ ({stats.pendingBookings})</span>
               </div>
               <div className="flex items-center gap-2 p-1.5 rounded-xl bg-sky-50 border border-sky-200 shadow-xs">
                 <div className="w-4 h-4 rounded-md bg-sky-600 text-white flex items-center justify-center text-[9px] font-bold shrink-0">👨</div>
@@ -115,7 +119,7 @@ export const SeatSelector: React.FC = () => {
                         return (
                           <button
                             key={seat.id}
-                            disabled={isBooked}
+                            disabled={isBooked || isReserved}
                             onClick={() => handleSeatClick(seat)}
                             className={`relative flex flex-col items-center justify-center w-12 sm:w-14 h-12 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm ${
                               isSelected
@@ -125,10 +129,10 @@ export const SeatSelector: React.FC = () => {
                                 : isMaleBooked
                                 ? 'bg-sky-50 text-sky-800 border-2 border-sky-300 cursor-not-allowed'
                                 : isReserved
-                                ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
+                                ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
                                 : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50'
                             }`}
-                            title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'সংরক্ষিত' : 'খালি (ক্লিক করে নির্বাচন করুন)'}`}
+                            title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করে নির্বাচন করুন)'}`}
                           >
                             {isFemaleBooked ? (
                               <>
@@ -139,6 +143,11 @@ export const SeatSelector: React.FC = () => {
                               <>
                                 <span className="text-[11px] leading-none mb-0.5">👨</span>
                                 <span className="text-[10px] font-bold text-sky-900">{seat.label}</span>
+                              </>
+                            ) : isReserved ? (
+                              <>
+                                <span className="text-[11px] leading-none mb-0.5">⏳</span>
+                                <span className="text-[10px] font-bold text-amber-950">{seat.label}</span>
                               </>
                             ) : (
                               <>
@@ -169,7 +178,7 @@ export const SeatSelector: React.FC = () => {
                         return (
                           <button
                             key={seat.id}
-                            disabled={isBooked}
+                            disabled={isBooked || isReserved}
                             onClick={() => handleSeatClick(seat)}
                             className={`relative flex flex-col items-center justify-center w-12 sm:w-14 h-12 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm ${
                               isSelected
@@ -179,10 +188,10 @@ export const SeatSelector: React.FC = () => {
                                 : isMaleBooked
                                 ? 'bg-sky-50 text-sky-800 border-2 border-sky-300 cursor-not-allowed'
                                 : isReserved
-                                ? 'bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200'
+                                ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
                                 : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50'
                             }`}
-                            title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'সংরক্ষিত' : 'খালি (ক্লিক করে নির্বাচন করুন)'}`}
+                            title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করে নির্বাচন করুন)'}`}
                           >
                             {isFemaleBooked ? (
                               <>
@@ -193,6 +202,11 @@ export const SeatSelector: React.FC = () => {
                               <>
                                 <span className="text-[11px] leading-none mb-0.5">👨</span>
                                 <span className="text-[10px] font-bold text-sky-900">{seat.label}</span>
+                              </>
+                            ) : isReserved ? (
+                              <>
+                                <span className="text-[11px] leading-none mb-0.5">⏳</span>
+                                <span className="text-[10px] font-bold text-amber-950">{seat.label}</span>
                               </>
                             ) : (
                               <>
@@ -275,6 +289,29 @@ export const SeatSelector: React.FC = () => {
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                   <span>মৌখিক বুকিং গ্রহণযোগ্য নয়, পেমেন্টের মাধ্যমে নিশ্চিত করুন।</span>
                 </div>
+              </div>
+
+              {/* Critical Red Notice with WhatsApp button */}
+              <div className="p-3.5 rounded-2xl bg-red-50 border-2 border-red-500 text-red-950 shadow-xs space-y-2.5">
+                <div className="flex items-center gap-1.5 text-red-700 font-bold text-xs">
+                  <ShieldCheck className="w-4 h-4 text-red-600 shrink-0" />
+                  <span>টিকিট বুকিং নিশ্চিতকরণের নির্দেশিকা</span>
+                </div>
+                <p className="text-xs text-red-900 leading-relaxed">
+                  সিট বুকিং কনফার্ম করতে সরাসরি আমাদের নাম্বারে যোগাযোগ করুন: 
+                  <a href={`tel:${settings.organizerPhone.replace(/[^0-9+]/g, '')}`} className="font-mono font-bold text-red-950 underline ml-1">
+                    {settings.organizerPhone}
+                  </a>
+                </p>
+                <a
+                  href={`https://wa.me/${settings.organizerPhone.replace(/[^0-9]/g, '').startsWith('88') ? settings.organizerPhone.replace(/[^0-9]/g, '') : settings.organizerPhone.replace(/[^0-9]/g, '').startsWith('0') ? `88${settings.organizerPhone.replace(/[^0-9]/g, '')}` : `880${settings.organizerPhone.replace(/[^0-9]/g, '')}`}?text=${encodeURIComponent('আসসালামু আলাইকুম! আমি ওয়েবসাইট থেকে টাঙ্গুয়ার হাওর ট্যুরের সিট বুকিং নিশ্চিত করতে যোগাযোগ করছি।')}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-95 text-center"
+                >
+                  <MessageCircle className="w-4 h-4 text-white shrink-0" />
+                  <span>Contact WhatsApp to confirm the booking</span>
+                </a>
               </div>
 
               <button
