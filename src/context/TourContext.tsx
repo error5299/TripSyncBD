@@ -279,7 +279,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (docSnap.exists() && docSnap.data()?.seatsList) {
         setSeats(docSnap.data().seatsList as Seat[]);
       } else {
-        const initialSeats = generateInitialSeats();
+        const initialSeats = generateInitialSeats(settings.hasKRow ?? false, settings.backRowSeatCount ?? 5);
         setDoc(doc(db, 'tour_data', 'seats'), {
           seatsList: sanitizeForFirestore(initialSeats)
         }).catch(console.error);

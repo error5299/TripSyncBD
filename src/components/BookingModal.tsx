@@ -27,7 +27,7 @@ import {
   HelpCircle
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { PassengerInfo, Booking } from '../types';
+import { PassengerInfo, Booking, Seat } from '../types';
 
 export const BookingModal: React.FC = () => {
   const {
@@ -240,8 +240,11 @@ export const BookingModal: React.FC = () => {
     setStep(4);
   };
 
-  // Bus layout rows (A to J, 4 seats per row)
+  // Bus layout rows
   const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  if (settings.hasKRow) {
+    rows.push('K');
+  }
 
   // Counts of booked and pending seats
   const maleBookedCount = seats.filter(s => s.status === 'booked' && (s.gender === 'পুরুষ' || s.bookedBy?.gender === 'পুরুষ')).length;
@@ -447,10 +450,64 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 </div>
 
                 <div className="space-y-2 max-h-[290px] overflow-y-auto pr-1">
-                  {rows.map((rowLetter, rowIndex) => {
-                    const rowSeats = seats.slice(rowIndex * 4, (rowIndex + 1) * 4);
+                  {rows.map((rowLetter) => {
+                    const rowSeats = seats.filter(s => s.label.startsWith(rowLetter));
+                    const isFiveSeatRow = rowSeats.length === 5;
                     const leftPair = rowSeats.slice(0, 2);
-                    const rightPair = rowSeats.slice(2, 4);
+                    const middleSeat = isFiveSeatRow ? rowSeats[2] : null;
+                    const rightPair = isFiveSeatRow ? rowSeats.slice(3, 5) : rowSeats.slice(2);
+
+                    const renderSeatBtn = (seat: Seat) => {
+                      const isSelected = selectedSeatNumbers.includes(seat.number);
+                      const isBooked = seat.status === 'booked';
+                      const isReserved = seat.status === 'reserved';
+                      const seatGender = seat.gender || seat.bookedBy?.gender;
+                      const isFemaleBooked = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
+                      const isMaleBooked = isBooked && (!seatGender || seatGender === 'পুরুষ');
+
+                      return (
+                        <button
+                          key={seat.id}
+                          type="button"
+                          disabled={isBooked || isReserved}
+                          onClick={() => toggleSeatSelection(seat.number)}
+                          className={`w-11 sm:w-13 h-11 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center shadow-xs ${
+                            isSelected
+                              ? 'bg-emerald-600 text-white ring-4 ring-emerald-300 font-extrabold scale-105 shadow-md z-10'
+                              : isFemaleBooked
+                              ? 'bg-rose-50 text-rose-900 border-2 border-rose-300 cursor-not-allowed'
+                              : isMaleBooked
+                              ? 'bg-sky-50 text-sky-900 border-2 border-sky-300 cursor-not-allowed'
+                              : isReserved
+                              ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
+                              : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 active:scale-95'
+                          }`}
+                          title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করুন)'}`}
+                        >
+                          {isFemaleBooked ? (
+                            <>
+                              <span className="text-[10px] leading-none">👩</span>
+                              <span className="text-[9px] font-bold text-rose-900">{seat.label}</span>
+                            </>
+                          ) : isMaleBooked ? (
+                            <>
+                              <span className="text-[10px] leading-none">👨</span>
+                              <span className="text-[9px] font-bold text-sky-900">{seat.label}</span>
+                            </>
+                          ) : isReserved ? (
+                            <>
+                              <span className="text-[10px] leading-none">⏳</span>
+                              <span className="text-[9px] font-bold text-amber-950">{seat.label}</span>
+                            </>
+                          ) : (
+                            <>
+                              <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-white' : 'text-emerald-700'}`} />
+                              <span>{seat.label}</span>
+                            </>
+                          )}
+                        </button>
+                      );
+                    };
 
                     return (
                       <div key={rowLetter} className="flex items-center justify-between gap-2 sm:gap-3">
@@ -460,57 +517,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
 
                         {/* Left pair */}
                         <div className="flex gap-2 flex-1 justify-end">
-                          {leftPair.map((seat) => {
-                            const isSelected = selectedSeatNumbers.includes(seat.number);
-                            const isBooked = seat.status === 'booked';
-                            const isReserved = seat.status === 'reserved';
-                            const seatGender = seat.gender || seat.bookedBy?.gender;
-                            const isFemaleBooked = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
-                            const isMaleBooked = isBooked && (!seatGender || seatGender === 'পুরুষ');
-
-                            return (
-                              <button
-                                key={seat.id}
-                                type="button"
-                                disabled={isBooked || isReserved}
-                                onClick={() => toggleSeatSelection(seat.number)}
-                                className={`w-11 sm:w-13 h-11 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center shadow-xs ${
-                                  isSelected
-                                    ? 'bg-emerald-600 text-white ring-4 ring-emerald-300 font-extrabold scale-105 shadow-md z-10'
-                                    : isFemaleBooked
-                                    ? 'bg-rose-50 text-rose-900 border-2 border-rose-300 cursor-not-allowed'
-                                    : isMaleBooked
-                                    ? 'bg-sky-50 text-sky-900 border-2 border-sky-300 cursor-not-allowed'
-                                    : isReserved
-                                    ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
-                                    : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 active:scale-95'
-                                }`}
-                                title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করুন)'}`}
-                              >
-                                {isFemaleBooked ? (
-                                  <>
-                                    <span className="text-[10px] leading-none">👩</span>
-                                    <span className="text-[9px] font-bold text-rose-900">{seat.label}</span>
-                                  </>
-                                ) : isMaleBooked ? (
-                                  <>
-                                    <span className="text-[10px] leading-none">👨</span>
-                                    <span className="text-[9px] font-bold text-sky-900">{seat.label}</span>
-                                  </>
-                                ) : isReserved ? (
-                                  <>
-                                    <span className="text-[10px] leading-none">⏳</span>
-                                    <span className="text-[9px] font-bold text-amber-950">{seat.label}</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-white' : 'text-emerald-700'}`} />
-                                    <span>{seat.label}</span>
-                                  </>
-                                )}
-                              </button>
-                            );
-                          })}
+                          {leftPair.map(renderSeatBtn)}
                         </div>
 
                         {/* Aisle */}
@@ -518,59 +525,22 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                           গলি
                         </div>
 
+                        {isFiveSeatRow && middleSeat ? (
+                          <>
+                            {/* Middle Seat K3 */}
+                            <div className="flex justify-center">
+                              {renderSeatBtn(middleSeat)}
+                            </div>
+                            {/* Aisle */}
+                            <div className="w-6 text-center text-[10px] text-slate-400 font-semibold">
+                              গলি
+                            </div>
+                          </>
+                        ) : null}
+
                         {/* Right pair */}
                         <div className="flex gap-2 flex-1 justify-start">
-                          {rightPair.map((seat) => {
-                            const isSelected = selectedSeatNumbers.includes(seat.number);
-                            const isBooked = seat.status === 'booked';
-                            const isReserved = seat.status === 'reserved';
-                            const seatGender = seat.gender || seat.bookedBy?.gender;
-                            const isFemaleBooked = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
-                            const isMaleBooked = isBooked && (!seatGender || seatGender === 'পুরুষ');
-
-                            return (
-                              <button
-                                key={seat.id}
-                                type="button"
-                                disabled={isBooked || isReserved}
-                                onClick={() => toggleSeatSelection(seat.number)}
-                                className={`w-11 sm:w-13 h-11 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center shadow-xs ${
-                                  isSelected
-                                    ? 'bg-emerald-600 text-white ring-4 ring-emerald-300 font-extrabold scale-105 shadow-md z-10'
-                                    : isFemaleBooked
-                                    ? 'bg-rose-50 text-rose-900 border-2 border-rose-300 cursor-not-allowed'
-                                    : isMaleBooked
-                                    ? 'bg-sky-50 text-sky-900 border-2 border-sky-300 cursor-not-allowed'
-                                    : isReserved
-                                    ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
-                                    : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 active:scale-95'
-                                }`}
-                                title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করুন)'}`}
-                              >
-                                {isFemaleBooked ? (
-                                  <>
-                                    <span className="text-[10px] leading-none">👩</span>
-                                    <span className="text-[9px] font-bold text-rose-900">{seat.label}</span>
-                                  </>
-                                ) : isMaleBooked ? (
-                                  <>
-                                    <span className="text-[10px] leading-none">👨</span>
-                                    <span className="text-[9px] font-bold text-sky-900">{seat.label}</span>
-                                  </>
-                                ) : isReserved ? (
-                                  <>
-                                    <span className="text-[10px] leading-none">⏳</span>
-                                    <span className="text-[9px] font-bold text-amber-950">{seat.label}</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-white' : 'text-emerald-700'}`} />
-                                    <span>{seat.label}</span>
-                                  </>
-                                )}
-                              </button>
-                            );
-                          })}
+                          {rightPair.map(renderSeatBtn)}
                         </div>
                       </div>
                     );

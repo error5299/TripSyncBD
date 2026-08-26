@@ -94,15 +94,68 @@ export const SeatSelector: React.FC = () => {
               </div>
             </div>
 
-            {/* 10 Rows of 4 seats (2 on left, aisle, 2 on right) */}
+            {/* Bus Layout */}
             <div className="space-y-2.5 max-h-[480px] overflow-y-auto pr-2">
               {rows.map((rowLetter) => {
                 const rowSeats = seats.filter(s => s.label.startsWith(rowLetter));
+                const isFiveSeatRow = rowSeats.length === 5;
                 const leftPair = rowSeats.slice(0, 2);
-                const rightPair = rowSeats.slice(2);
+                const middleSeat = isFiveSeatRow ? rowSeats[2] : null;
+                const rightPair = isFiveSeatRow ? rowSeats.slice(3, 5) : rowSeats.slice(2);
+
+                const renderSeatBtn = (seat: Seat) => {
+                  const isSelected = selectedSeat === seat.number;
+                  const isBooked = seat.status === 'booked';
+                  const isReserved = seat.status === 'reserved';
+                  const seatGender = seat.gender || seat.bookedBy?.gender;
+                  const isFemaleBooked = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
+                  const isMaleBooked = isBooked && (!seatGender || seatGender === 'পুরুষ');
+
+                  return (
+                    <button
+                      key={seat.id}
+                      disabled={isBooked || isReserved}
+                      onClick={() => handleSeatClick(seat)}
+                      className={`relative flex flex-col items-center justify-center w-12 sm:w-14 h-12 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm ${
+                        isSelected
+                          ? 'bg-emerald-600 text-white ring-4 ring-emerald-300 scale-105 shadow-md z-10'
+                          : isFemaleBooked
+                          ? 'bg-rose-50 text-rose-800 border-2 border-rose-300 cursor-not-allowed'
+                          : isMaleBooked
+                          ? 'bg-sky-50 text-sky-800 border-2 border-sky-300 cursor-not-allowed'
+                          : isReserved
+                          ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
+                          : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50'
+                      }`}
+                      title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করে নির্বাচন করুন)'}`}
+                    >
+                      {isFemaleBooked ? (
+                        <>
+                          <span className="text-[11px] leading-none mb-0.5">👩</span>
+                          <span className="text-[10px] font-bold text-rose-900">{seat.label}</span>
+                        </>
+                      ) : isMaleBooked ? (
+                        <>
+                          <span className="text-[11px] leading-none mb-0.5">👨</span>
+                          <span className="text-[10px] font-bold text-sky-900">{seat.label}</span>
+                        </>
+                      ) : isReserved ? (
+                        <>
+                          <span className="text-[11px] leading-none mb-0.5">⏳</span>
+                          <span className="text-[10px] font-bold text-amber-950">{seat.label}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-white' : 'text-emerald-700'}`} />
+                          <span>{seat.label}</span>
+                        </>
+                      )}
+                    </button>
+                  );
+                };
 
                 return (
-                  <div key={rowLetter} className="flex items-center justify-between gap-2.5 sm:gap-4">
+                  <div key={rowLetter} className="flex items-center justify-between gap-2 sm:gap-3">
                     {/* Row Label */}
                     <span className="w-5 text-center text-xs font-bold text-slate-600">
                       {rowLetter}
@@ -110,115 +163,30 @@ export const SeatSelector: React.FC = () => {
 
                     {/* Left Pair */}
                     <div className="flex gap-2 flex-1 justify-end">
-                      {leftPair.map((seat) => {
-                        const isSelected = selectedSeat === seat.number;
-                        const isBooked = seat.status === 'booked';
-                        const isReserved = seat.status === 'reserved';
-                        const seatGender = seat.gender || seat.bookedBy?.gender;
-                        const isFemaleBooked = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
-                        const isMaleBooked = isBooked && (!seatGender || seatGender === 'পুরুষ');
-
-                        return (
-                          <button
-                            key={seat.id}
-                            disabled={isBooked || isReserved}
-                            onClick={() => handleSeatClick(seat)}
-                            className={`relative flex flex-col items-center justify-center w-12 sm:w-14 h-12 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm ${
-                              isSelected
-                                ? 'bg-emerald-600 text-white ring-4 ring-emerald-300 scale-105 shadow-md z-10'
-                                : isFemaleBooked
-                                ? 'bg-rose-50 text-rose-800 border-2 border-rose-300 cursor-not-allowed'
-                                : isMaleBooked
-                                ? 'bg-sky-50 text-sky-800 border-2 border-sky-300 cursor-not-allowed'
-                                : isReserved
-                                ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
-                                : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50'
-                            }`}
-                            title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করে নির্বাচন করুন)'}`}
-                          >
-                            {isFemaleBooked ? (
-                              <>
-                                <span className="text-[11px] leading-none mb-0.5">👩</span>
-                                <span className="text-[10px] font-bold text-rose-900">{seat.label}</span>
-                              </>
-                            ) : isMaleBooked ? (
-                              <>
-                                <span className="text-[11px] leading-none mb-0.5">👨</span>
-                                <span className="text-[10px] font-bold text-sky-900">{seat.label}</span>
-                              </>
-                            ) : isReserved ? (
-                              <>
-                                <span className="text-[11px] leading-none mb-0.5">⏳</span>
-                                <span className="text-[10px] font-bold text-amber-950">{seat.label}</span>
-                              </>
-                            ) : (
-                              <>
-                                <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-white' : 'text-emerald-700'}`} />
-                                <span>{seat.label}</span>
-                              </>
-                            )}
-                          </button>
-                        );
-                      })}
+                      {leftPair.map(renderSeatBtn)}
                     </div>
 
                     {/* Bus Aisle */}
-                    <div className="w-7 sm:w-9 text-center text-[10px] font-semibold text-slate-500">
+                    <div className="w-6 sm:w-8 text-center text-[10px] font-semibold text-slate-500">
                       গলি
                     </div>
 
+                    {isFiveSeatRow && middleSeat ? (
+                      <>
+                        {/* Middle Seat (K3) */}
+                        <div className="flex justify-center">
+                          {renderSeatBtn(middleSeat)}
+                        </div>
+                        {/* Bus Aisle */}
+                        <div className="w-6 sm:w-8 text-center text-[10px] font-semibold text-slate-500">
+                          গলি
+                        </div>
+                      </>
+                    ) : null}
+
                     {/* Right Pair */}
                     <div className="flex gap-2 flex-1 justify-start">
-                      {rightPair.map((seat) => {
-                        const isSelected = selectedSeat === seat.number;
-                        const isBooked = seat.status === 'booked';
-                        const isReserved = seat.status === 'reserved';
-                        const seatGender = seat.gender || seat.bookedBy?.gender;
-                        const isFemaleBooked = isBooked && (seatGender === 'মহিলা' || seatGender === 'নারী');
-                        const isMaleBooked = isBooked && (!seatGender || seatGender === 'পুরুষ');
-
-                        return (
-                          <button
-                            key={seat.id}
-                            disabled={isBooked || isReserved}
-                            onClick={() => handleSeatClick(seat)}
-                            className={`relative flex flex-col items-center justify-center w-12 sm:w-14 h-12 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm ${
-                              isSelected
-                                ? 'bg-emerald-600 text-white ring-4 ring-emerald-300 scale-105 shadow-md z-10'
-                                : isFemaleBooked
-                                ? 'bg-rose-50 text-rose-800 border-2 border-rose-300 cursor-not-allowed'
-                                : isMaleBooked
-                                ? 'bg-sky-50 text-sky-800 border-2 border-sky-300 cursor-not-allowed'
-                                : isReserved
-                                ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
-                                : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50'
-                            }`}
-                            title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করে নির্বাচন করুন)'}`}
-                          >
-                            {isFemaleBooked ? (
-                              <>
-                                <span className="text-[11px] leading-none mb-0.5">👩</span>
-                                <span className="text-[10px] font-bold text-rose-900">{seat.label}</span>
-                              </>
-                            ) : isMaleBooked ? (
-                              <>
-                                <span className="text-[11px] leading-none mb-0.5">👨</span>
-                                <span className="text-[10px] font-bold text-sky-900">{seat.label}</span>
-                              </>
-                            ) : isReserved ? (
-                              <>
-                                <span className="text-[11px] leading-none mb-0.5">⏳</span>
-                                <span className="text-[10px] font-bold text-amber-950">{seat.label}</span>
-                              </>
-                            ) : (
-                              <>
-                                <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-white' : 'text-emerald-700'}`} />
-                                <span>{seat.label}</span>
-                              </>
-                            )}
-                          </button>
-                        );
-                      })}
+                      {rightPair.map(renderSeatBtn)}
                     </div>
                   </div>
                 );
