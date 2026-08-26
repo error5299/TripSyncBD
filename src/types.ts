@@ -117,4 +117,6 @@ export interface TourSettings {
   nagadNumber: string;
   bankDetails: string;
   meetingPoint: string;
+  backRowSeatCount?: number;
+  hasKRow?: boolean;
 }

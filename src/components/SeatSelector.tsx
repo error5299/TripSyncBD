@@ -7,9 +7,11 @@ export const SeatSelector: React.FC = () => {
   const { seats, openBookingModal, settings, stats } = useTour();
   const [selectedSeat, setSelectedSeat] = useState<number | null>(null);
 
-  // Group seats into pairs for standard 2x2 luxury bus layout (40 seats = 10 rows of 4)
-  // Left side: A1, A2; Right side: A3, A4
+  // Group seats into bus layout rows (A-J standard, optional K row with 5 seats)
   const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  if (settings.hasKRow) {
+    rows.push('K');
+  }
 
   const handleSeatClick = (seat: Seat) => {
     if (seat.status === 'booked') {
@@ -94,10 +96,10 @@ export const SeatSelector: React.FC = () => {
 
             {/* 10 Rows of 4 seats (2 on left, aisle, 2 on right) */}
             <div className="space-y-2.5 max-h-[480px] overflow-y-auto pr-2">
-              {rows.map((rowLetter, rowIndex) => {
-                const rowSeats = seats.slice(rowIndex * 4, (rowIndex + 1) * 4);
+              {rows.map((rowLetter) => {
+                const rowSeats = seats.filter(s => s.label.startsWith(rowLetter));
                 const leftPair = rowSeats.slice(0, 2);
-                const rightPair = rowSeats.slice(2, 4);
+                const rightPair = rowSeats.slice(2);
 
                 return (
                   <div key={rowLetter} className="flex items-center justify-between gap-2.5 sm:gap-4">

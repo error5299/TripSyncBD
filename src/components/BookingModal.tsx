@@ -289,7 +289,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
   return (
     <div 
       id="booking-modal-overlay"
-      className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-2.5 sm:p-4 md:p-6 overflow-y-auto animate-in fade-in duration-200 no-print print:hidden"
     >
       <div 
         id="booking-window-card"

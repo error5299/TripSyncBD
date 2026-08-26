@@ -41,6 +41,8 @@ interface TourContextType {
   setSeatStatus: (seatId: number, status: Seat['status']) => void;
   unbookSeat: (seatNumber: number) => void;
   resetAllSeats: () => void;
+  updateBackRowSeatCount: (count: number) => void;
+  updateSeatLayout: (hasKRow: boolean, backRowSeatCount: number) => void;
   
   // Interested Leads
   addInterestedLead: (lead: Omit<InterestedLead, 'id' | 'date' | 'status'>) => void;
@@ -90,10 +92,10 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return saved ? JSON.parse(saved) : initialTourSettings;
   });
 
-  // Seats (all 40 available at start)
+  // Seats (available at start)
   const [seats, setSeats] = useState<Seat[]>(() => {
     const saved = localStorage.getItem('th_v4_seats');
-    return saved ? JSON.parse(saved) : generateInitialSeats();
+    return saved ? JSON.parse(saved) : generateInitialSeats(settings.hasKRow ?? false, settings.backRowSeatCount ?? 5);
   });
 
   // Bookings (starts at 0)
@@ -201,7 +203,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Automatic Seat Layout Reconciliation with Bookings (Ensures server reboots/restarts automatically rebook seats based on written bookings)
   useEffect(() => {
-    if (bookings.length >= 0 && seats.length === 40) {
+    if (bookings.length >= 0 && seats.length > 0) {
       let needsUpdate = false;
       const reconciled = seats.map(s => {
         const activeBooking = bookings.find(b => 
@@ -598,15 +600,97 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const resetAllSeats = () => {
-    const freshSeats = generateInitialSeats();
+    const freshSeats = generateInitialSeats(settings.hasKRow ?? false, settings.backRowSeatCount ?? 5);
     setSeats(freshSeats);
     setDoc(doc(db, 'tour_data', 'seats'), {
       seatsList: sanitizeForFirestore(freshSeats)
     }).catch(console.error);
   };
 
+  const updateBackRowSeatCount = (count: number) => {
+    updateSettings({ backRowSeatCount: count, totalSeats: 36 + count + (settings.hasKRow ? 5 : 0) });
+    const newSeats = generateInitialSeats(settings.hasKRow ?? false, count);
+    
+    // Zero Data Loss Reconciliation
+    const reconciledSeats = newSeats.map(s => {
+      const activeBooking = bookings.find(b => 
+        b.paymentStatus !== 'বাতিল' && 
+        (b.seatLabels?.includes(s.label) || b.seatNumbers?.includes(s.number))
+      );
+      if (activeBooking) {
+        const targetStatus = activeBooking.paymentStatus === 'নিশ্চিত' ? 'booked' : 'reserved';
+        const matchedPassenger = activeBooking.passengers?.find(p => p.seatLabel === s.label || p.seatNumber === s.number);
+        const pName = matchedPassenger?.name || activeBooking.name;
+        const pGender = matchedPassenger?.gender || activeBooking.gender;
+        return {
+          ...s,
+          status: targetStatus,
+          gender: pGender,
+          passengerName: pName,
+          bookedBy: {
+            name: pName,
+            phone: matchedPassenger?.phone || activeBooking.phone,
+            bookingId: activeBooking.bookingCode,
+            gender: pGender,
+          }
+        };
+      }
+      return s;
+    });
+
+    setSeats(reconciledSeats);
+    setDoc(doc(db, 'tour_data', 'seats'), {
+      seatsList: sanitizeForFirestore(reconciledSeats)
+    }).catch(console.error);
+  };
+
+  const updateSeatLayout = (hasKRow: boolean, backRowSeatCount: number) => {
+    const updatedSettings = {
+      ...settings,
+      hasKRow,
+      backRowSeatCount,
+      totalSeats: 36 + backRowSeatCount + (hasKRow ? 5 : 0)
+    };
+    setSettings(updatedSettings);
+    setDoc(doc(db, 'tour_data', 'settings'), sanitizeForFirestore(updatedSettings), { merge: true }).catch(console.error);
+
+    const freshSeats = generateInitialSeats(hasKRow, backRowSeatCount);
+    
+    // Zero Data Loss Reconciliation
+    const reconciledSeats = freshSeats.map(s => {
+      const activeBooking = bookings.find(b => 
+        b.paymentStatus !== 'বাতিল' && 
+        (b.seatLabels?.includes(s.label) || b.seatNumbers?.includes(s.number))
+      );
+      if (activeBooking) {
+        const targetStatus = activeBooking.paymentStatus === 'নিশ্চিত' ? 'booked' : 'reserved';
+        const matchedPassenger = activeBooking.passengers?.find(p => p.seatLabel === s.label || p.seatNumber === s.number);
+        const pName = matchedPassenger?.name || activeBooking.name;
+        const pGender = matchedPassenger?.gender || activeBooking.gender;
+        return {
+          ...s,
+          status: targetStatus,
+          gender: pGender,
+          passengerName: pName,
+          bookedBy: {
+            name: pName,
+            phone: matchedPassenger?.phone || activeBooking.phone,
+            bookingId: activeBooking.bookingCode,
+            gender: pGender,
+          }
+        };
+      }
+      return s;
+    });
+
+    setSeats(reconciledSeats);
+    setDoc(doc(db, 'tour_data', 'seats'), {
+      seatsList: sanitizeForFirestore(reconciledSeats)
+    }).catch(console.error);
+  };
+
   const resetAllDataToZero = () => {
-    const freshSeats = generateInitialSeats();
+    const freshSeats = generateInitialSeats(settings.hasKRow ?? false, settings.backRowSeatCount ?? 5);
     setSeats(freshSeats);
     setBookings([]);
     setInterestedLeads([]);
@@ -727,6 +811,8 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSeatStatus,
         unbookSeat,
         resetAllSeats,
+        updateBackRowSeatCount,
+        updateSeatLayout,
         resetAllDataToZero,
         addInterestedLead,
         updateLeadStatus,

@@ -35,10 +35,12 @@ import {
   Clock,
   MessageCircle,
   PhoneCall,
-  Check
+  Check,
+  Sliders
 } from 'lucide-react';
 import { Booking, SeatStatus, ExpenseItem, Announcement } from '../../types';
 import { BatchTicketPrintModal } from './BatchTicketPrintModal';
+import { SeatDataExportModal } from './SeatDataExportModal';
 
 export const AdminLayout: React.FC = () => {
   const {
@@ -48,6 +50,8 @@ export const AdminLayout: React.FC = () => {
     setSeatStatus,
     unbookSeat,
     resetAllSeats,
+    updateBackRowSeatCount,
+    updateSeatLayout,
     bookings,
     updateBookingStatus,
     confirmTicket,
@@ -109,6 +113,9 @@ export const AdminLayout: React.FC = () => {
 
   // Reset to Zero Confirmation Dialog
   const [showResetZeroModal, setShowResetZeroModal] = useState(false);
+
+  // Seat Data Export Modal State
+  const [isSeatExportModalOpen, setIsSeatExportModalOpen] = useState(false);
 
   // Batch / Single Ticket Print Modal State
   const [isBatchPrintModalOpen, setIsBatchPrintModalOpen] = useState(false);
@@ -318,6 +325,8 @@ export const AdminLayout: React.FC = () => {
     { name: 'ট্যুর ব্যবস্থাপনা', icon: Calendar },
     { name: 'অংশগ্রহণকারী', icon: Users, badge: stats.confirmedBookings },
     { name: 'সিট ব্যবস্থাপনা', icon: Armchair },
+    { name: 'সিট লেআউট কনফিগারেশন', icon: Sliders },
+    { name: 'আসন চার্ট ও এক্সপোর্ট', icon: FileSpreadsheet, badge: seats.length },
     { name: 'পেমেন্ট', icon: CreditCard },
     { name: 'খরচের হিসাব', icon: Receipt },
     { name: 'খাবার', icon: Utensils },
@@ -327,6 +336,108 @@ export const AdminLayout: React.FC = () => {
     { name: 'রিপোর্ট ও ডাউনলোড', icon: FileSpreadsheet },
     { name: 'সেটিংস', icon: SettingsIcon },
   ];
+
+  // Export All 40 Seats Detailed CSV with individual passenger & empty seat status
+  const exportAllSeatsCSV = () => {
+    const headers = [
+      'সিট নম্বর (Seat No)',
+      'সিট লেবেল (Seat Label)',
+      'অবস্থা (Status)',
+      'যাত্রীর নাম (Passenger Name)',
+      'মোবাইল নম্বর (Phone)',
+      'লিঙ্গ (Gender)',
+      'বুকিং কোড (Booking Code)',
+      'বোর্ডিং পয়েন্ট (Boarding Point)',
+      'খাবার পছন্দ (Food Choice)',
+      'পেমেন্ট অবস্থা (Payment Status)',
+      'পরিশোধিত টাকা (Paid Amount)',
+      'উপস্থিতি/চেক-ইন (Check-in)'
+    ];
+
+    const rows = seats.map((seat) => {
+      const matchingBooking = bookings.find(
+        (b) => b.seatNumbers.includes(seat.number) && b.paymentStatus !== 'বাতিল'
+      );
+      if (matchingBooking) {
+        const specificPassenger = matchingBooking.passengers?.find(
+          (p) => p.seatNumber === seat.number
+        );
+        const pName = specificPassenger?.name || seat.passengerName || matchingBooking.name || 'বুকড যাত্রী';
+        const pPhone = specificPassenger?.phone || seat.bookedBy?.phone || matchingBooking.phone || '—';
+        const pGender = specificPassenger?.gender || seat.gender || seat.bookedBy?.gender || matchingBooking.gender || '—';
+        const pFood = specificPassenger?.dietaryPreference || matchingBooking.dietaryPreference || 'সাধারণ';
+        const isConfirmed = matchingBooking.paymentStatus === 'নিশ্চিত' || seat.status === 'booked';
+        const statusLabel = isConfirmed ? 'বুকড (Booked)' : 'অপেক্ষমাণ (Pending)';
+
+        return [
+          seat.number,
+          `"${seat.label}"`,
+          `"${statusLabel}"`,
+          `"${pName}"`,
+          `"${pPhone}"`,
+          `"${pGender}"`,
+          `"${matchingBooking.bookingCode}"`,
+          `"${matchingBooking.boardingPoint || settings.meetingPoint}"`,
+          `"${pFood}"`,
+          `"${matchingBooking.paymentStatus}"`,
+          Math.round(matchingBooking.paidAmount / (matchingBooking.seatNumbers.length || 1)),
+          `"${matchingBooking.checkedIn ? 'উপস্থিত' : 'অনুপস্থিত'}"`
+        ];
+      }
+
+      if (seat.status === 'booked' || seat.status === 'reserved') {
+        const isConfirmed = seat.status === 'booked';
+        return [
+          seat.number,
+          `"${seat.label}"`,
+          `"${isConfirmed ? 'বুকড (Booked)' : 'সংরক্ষিত (Reserved)'}"`,
+          `"${seat.passengerName || seat.bookedBy?.name || (isConfirmed ? 'বুকড যাত্রী' : 'সংরক্ষিত')}"`,
+          `"${seat.bookedBy?.phone || '—'}"`,
+          `"${seat.gender || seat.bookedBy?.gender || '—'}"`,
+          `"${seat.bookedBy?.bookingId || 'ADMIN'}"`,
+          `"${settings.meetingPoint}"`,
+          `"সাধারণ"`,
+          `"${isConfirmed ? 'নিশ্চিত' : 'অপেক্ষমাণ'}"`,
+          isConfirmed ? settings.pricePerPerson : 0,
+          `"অনুপস্থিত"`
+        ];
+      }
+
+      return [
+        seat.number,
+        `"${seat.label}"`,
+        `"খালি (Empty)"`,
+        `"— (খালি / Empty)"`,
+        `"—"`,
+        `"—"`,
+        `"—"`,
+        `"—"`,
+        `"—"`,
+        `"—"`,
+        0,
+        `"—"`
+      ];
+    });
+
+    const csvContent = '\uFEFF' + [
+      `"টাঙ্গুয়ার হাওর ভ্রমণ ২০২৬ - ৪০ বাসের আসনভিত্তিক পূর্ণাঙ্গ যাত্রী তালিকা"`,
+      `"রুট: কুষ্টিয়া থেকে টাঙ্গুয়ার হাওর বা সুনামগঞ্জ | যাত্রার তারিখ: ${settings.tourDates}"`,
+      '',
+      headers.join(','),
+      ...rows.map(row => row.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Tanguar_Haor_Seat_Data_40Seats_${Date.now()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    showToast('৪০টি সিটের ডেটা সফলভাবে এক্সেল/CSV ফাইলে এক্সপোর্ট হয়েছে!');
+  };
 
   // CSV Export utility with UTF-8 BOM for Bengali encoding support in Excel
   const exportParticipantsCSV = () => {
@@ -358,7 +469,7 @@ export const AdminLayout: React.FC = () => {
       )}
 
       {/* SIDEBAR NAVIGATION */}
-      <aside className="w-full lg:w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0">
+      <aside className="admin-sidebar-view w-full lg:w-72 bg-slate-900 border-r border-slate-800 flex flex-col justify-between shrink-0 print:hidden">
         <div>
           {/* Top Brand */}
           <div className="p-6 border-b border-slate-800 flex items-center justify-between">
@@ -437,7 +548,7 @@ export const AdminLayout: React.FC = () => {
       </aside>
 
       {/* MAIN ADMIN CONTENT AREA */}
-      <main className="flex-1 min-w-0 bg-slate-950 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+      <main className="admin-main-view flex-1 min-w-0 bg-slate-950 p-4 sm:p-6 lg:p-8 overflow-y-auto print:hidden">
         
         {/* Top Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-slate-800">
@@ -456,6 +567,15 @@ export const AdminLayout: React.FC = () => {
 
           <div className="flex flex-wrap items-center gap-3">
             <button
+              onClick={() => setIsSeatExportModalOpen(true)}
+              className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/40 text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md transition-all active:scale-95 cursor-pointer"
+              title="বাসের ৪০টি আসনের নির্দিষ্ট যাত্রী তালিকা ও এক্সপোর্ট"
+            >
+              <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+              <span>সিট ডেটা এক্সপোর্ট</span>
+            </button>
+
+            <button
               onClick={() => openBookingModal()}
               className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-600/30 transition-all active:scale-95"
             >
@@ -472,6 +592,126 @@ export const AdminLayout: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* ========================================================================= */}
+        {/* সিট লেআউট কনফিগারেশন (SEAT LAYOUT CONFIGURATION) */}
+        {/* ========================================================================= */}
+        {activeTab === 'সিট লেআউট কনফিগারেশন' && (
+          <div className="space-y-6 max-w-4xl mx-auto">
+            <div className="p-6 sm:p-8 rounded-3xl bg-slate-900 border border-slate-800 shadow-xl space-y-6">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <div>
+                  <h2 className="text-xl font-bold text-white flex items-center gap-2.5">
+                    <Sliders className="w-6 h-6 text-emerald-400" />
+                    <span>বাস সিট লেআউট ও কনফিগারেশন (জিরো ডেটা লস)</span>
+                  </h2>
+                  <p className="text-sm text-slate-400 mt-1">
+                    বাসের প্রথম চারটি লাইন (A, B, C, D) অপরিবর্তিত থাকবে। পেছনের দিকে ৫টি সিট বিশিষ্ট ঐচ্ছিক 'K' লাইন যোগ বা বাদ দিতে পারেন।
+                  </p>
+                </div>
+                <div className="px-3.5 py-1.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-xs font-bold font-mono">
+                  মোট সিট: {seats.length} টি
+                </div>
+              </div>
+
+              {/* Status Alert */}
+              <div className="p-4 rounded-2xl bg-emerald-950/40 border border-emerald-800/60 flex items-start gap-3 text-emerald-300 text-xs sm:text-sm">
+                <ShieldCheck className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
+                <div>
+                  <strong className="font-bold text-white block mb-1">নিরাপদ সিট লেআউট পরিবর্তন (কোনো ডেটা লস হবে না):</strong>
+                  সিট লেআউট পরিবর্তন করলে আপনার বর্তমান কোনো বুকিং, পেমেন্ট বা যাত্রীর তথ্য মুছে যাবে না। সমস্ত বুকিং নতুন সিট লেআউটের সাথে স্বয়ংক্রিয়ভাবে সিংক ও সংরক্ষিত থাকবে। এটি অ্যাডমিন প্যানেল, পাবলিক প্যানেল এবং সকল ডিভাইসে রিয়েল-টাইমে আপডেট হবে।
+                </div>
+              </div>
+
+              <div className="space-y-5 pt-2">
+                {/* Optional K Line Toggle */}
+                <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <span>ঐচ্ছিক 'K' লাইন (৫টি সিট: K1, K2, K3, K4, K5)</span>
+                      <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-600/20 text-emerald-400 font-mono">ঐচ্ছিক</span>
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">
+                      চালু করলে বাসের শেষ সারিতে K1 থেকে K5 পর্যন্ত অতিরিক্ত ৫টি সিট যুক্ত হবে। বন্ধ রাখলে স্ট্যান্ডার্ড সিট বিন্যাস থাকবে।
+                    </p>
+                  </div>
+
+                  <label className="relative inline-flex items-center cursor-pointer shrink-0">
+                    <input
+                      type="checkbox"
+                      checked={settings.hasKRow ?? false}
+                      onChange={(e) => {
+                        const newHasKRow = e.target.checked;
+                        const backSeats = settings.backRowSeatCount ?? 5;
+                        updateSeatLayout(newHasKRow, backSeats);
+                        showToast(newHasKRow ? "ঐচ্ছিক 'K' লাইন (৫টি সিট) সফলভাবে যুক্ত হয়েছে!" : "ঐচ্ছিক 'K' লাইন সরিয়ে নেওয়া হয়েছে!");
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-14 h-7 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-emerald-600"></div>
+                    <span className="ml-3 text-xs font-bold text-slate-300">
+                      {settings.hasKRow ? 'চালু আছে (K-Row Active)' : 'বন্ধ আছে'}
+                    </span>
+                  </label>
+                </div>
+
+                {/* Back Row (J-Row) Seat Count */}
+                <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+                  <h3 className="text-sm font-bold text-white">পেছনের সারি (Row J) সিট সংখ্যা</h3>
+                  <p className="text-xs text-slate-400">
+                    Row J-এ ৪টি বা ৫টি সিট নির্ধারণ করতে পারেন।
+                  </p>
+                  <div className="flex flex-wrap items-center gap-3 pt-1">
+                    <button
+                      onClick={() => {
+                        const hasK = settings.hasKRow ?? false;
+                        updateSeatLayout(hasK, 4);
+                        showToast("Row J-এ ৪টি সিট সেট করা হয়েছে!");
+                      }}
+                      className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        (settings.backRowSeatCount ?? 5) === 4
+                          ? 'bg-emerald-600 text-white shadow-md'
+                          : 'bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800'
+                      }`}
+                    >
+                      Row J: ৪টি সিট (J1-J4)
+                    </button>
+                    <button
+                      onClick={() => {
+                        const hasK = settings.hasKRow ?? false;
+                        updateSeatLayout(hasK, 5);
+                        showToast("Row J-এ ৫টি সিট সেট করা হয়েছে!");
+                      }}
+                      className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        (settings.backRowSeatCount ?? 5) === 5
+                          ? 'bg-emerald-600 text-white shadow-md'
+                          : 'bg-slate-900 text-slate-300 border border-slate-700 hover:bg-slate-800'
+                      }`}
+                    >
+                      Row J: ৫টি সিট (J1-J5)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Summary Info */}
+                <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <span className="text-xs text-slate-400 block">প্রথম ৪ সারি (A-D)</span>
+                    <span className="text-sm font-bold text-white mt-1 block">অপরিবর্তিত (১৬ সিট)</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <span className="text-xs text-slate-400 block">সারি J কনফিগারেশন</span>
+                    <span className="text-sm font-bold text-emerald-400 mt-1 block">{settings.backRowSeatCount ?? 5} টি সিট</span>
+                  </div>
+                  <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                    <span className="text-xs text-slate-400 block">ঐচ্ছিক K লাইন</span>
+                    <span className="text-sm font-bold text-emerald-400 mt-1 block">{settings.hasKRow ? 'সক্রিয় (৫ সিট)' : 'নিষ্ক্রিয়'}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ========================================================================= */}
         {/* 1. ড্যাশবোর্ড (DASHBOARD) */}
@@ -1186,11 +1426,29 @@ export const AdminLayout: React.FC = () => {
 
                   <div className="flex flex-wrap gap-2.5">
                     <button
+                      onClick={() => setIsSeatExportModalOpen(true)}
+                      className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-md shadow-blue-600/20 flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
+                      title="৪০টি আসনের নির্দিষ্ট যাত্রী বিবরণী, খালি আসন এবং এক্সপোর্ট"
+                    >
+                      <FileSpreadsheet className="w-4 h-4" />
+                      <span>📥 আসন ডেটা এক্সপোর্ট ও চার্ট (.CSV/প্রিন্ট)</span>
+                    </button>
+
+                    <button
+                      onClick={exportAllSeatsCSV}
+                      className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer"
+                      title="সরাসরি এক্সেল (.CSV) ফাইল ডাউনলোড করুন"
+                    >
+                      <Download className="w-4 h-4 text-emerald-400" />
+                      <span>এক্সেল (.CSV)</span>
+                    </button>
+
+                    <button
                       onClick={() => openBookingModal()}
                       className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 flex items-center gap-2 transition-all active:scale-95"
                     >
                       <Plus className="w-4 h-4" />
-                      <span>+ সিট বুক করুন (বুকিং উইন্ডো)</span>
+                      <span>+ সিট বুক করুন</span>
                     </button>
                   </div>
                 </div>
@@ -1282,12 +1540,18 @@ export const AdminLayout: React.FC = () => {
                   <span>← বাম পাশ | গলি | ডান পাশ →</span>
                 </div>
 
-                {/* 40 Seats Bus Layout View */}
+                {/* Bus Layout View */}
                 <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2">
-                  {['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'].map((rowLetter, rowIndex) => {
-                    const allRowSeats = seats.slice(rowIndex * 4, (rowIndex + 1) * 4);
+                  {(() => {
+                    const busRows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+                    if (settings.hasKRow) {
+                      busRows.push('K');
+                    }
+                    return busRows;
+                  })().map((rowLetter) => {
+                    const allRowSeats = seats.filter(s => s.label.startsWith(rowLetter));
                     const leftPair = allRowSeats.slice(0, 2);
-                    const rightPair = allRowSeats.slice(2, 4);
+                    const rightPair = allRowSeats.slice(2);
 
                     const matchesFilter = (seat: any) => {
                       if (seatGenderFilter === 'all') return true;
@@ -1919,6 +2183,42 @@ export const AdminLayout: React.FC = () => {
                 </div>
               </div>
 
+              {/* Seat Layout Customization Box */}
+              <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                  <div>
+                    <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                      <Armchair className="w-4 h-4 text-emerald-400" />
+                      <span>বাস সিট লেআউট ও ব্যাক রো (J-Row) কাস্টমাইজেশন</span>
+                    </h4>
+                    <p className="text-xs text-slate-400 mt-0.5">
+                      পেছনের লাইনে (Row J) সিট সংখ্যা ৪টি বা ৫টি নির্ধারণ করুন। ৫টি সিট সিলেক্ট করলে J1, J2, J3, J4, J5 তৈরি হবে।
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-300">পেছনের লাইনে সিট সংখ্যা</label>
+                    <select
+                      value={settings.backRowSeatCount ?? 5}
+                      onChange={(e) => {
+                        const count = Number(e.target.value);
+                        updateBackRowSeatCount(count);
+                      }}
+                      className="px-4 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold text-xs focus:ring-2 focus:ring-emerald-500"
+                    >
+                      <option value={4}>৪টি সিট (J1, J2, J3, J4) — মোট ৪০ সিট</option>
+                      <option value={5}>৫টি সিট (J1, J2, J3, J4, J5) — মোট ৪১ সিট</option>
+                    </select>
+                  </div>
+
+                  <div className="text-xs text-emerald-400 bg-emerald-950/40 px-3 py-2 rounded-xl border border-emerald-800/40">
+                    বর্তমান মোট সিট: <strong className="font-mono text-white">{seats.length}</strong> টি
+                  </div>
+                </div>
+              </div>
+
               {/* Data Reset Box */}
               <div className="p-5 rounded-2xl bg-rose-950/30 border border-rose-800/40 space-y-3">
                 <div className="flex items-center justify-between">
@@ -1955,8 +2255,250 @@ export const AdminLayout: React.FC = () => {
           </div>
         )}
 
-        {/* Fallback for other tabs like 'অংশগ্রহণকারী', 'খাবার', 'পরিবহন ও বোর্ডিং', 'রিপোর্ট' */}
-        {['ট্যুর ব্যবস্থাপনা', 'অংশগ্রহণকারী', 'পেমেন্ট', 'খাবার', 'পরিবহন ও বোর্ডিং', 'রিপোর্ট ও ডাউনলোড'].includes(activeTab) && (
+        {/* ========================================================================= */}
+        {/* আসন চার্ট ও এক্সপোর্ট এবং রিপোর্ট ও ডাউনলোড (SEAT CHART & REPORTS) */}
+        {/* ========================================================================= */}
+        {(activeTab === 'আসন চার্ট ও এক্সপোর্ট' || activeTab === 'রিপোর্ট ও ডাউনলোড') && (
+          <div className="space-y-6">
+            
+            {/* Top Export Feature Banner */}
+            <div className="bg-gradient-to-r from-slate-900 via-blue-950/40 to-slate-900 border border-blue-500/30 rounded-3xl p-6 shadow-xl">
+              <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+                <div className="space-y-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold border border-blue-500/30">
+                    <Armchair className="w-3.5 h-3.5" />
+                    <span>৪০ বাসের পূর্ণাঙ্গ আসন ও যাত্রী ডেটা পোর্টাল</span>
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-bold text-white font-sans">
+                    আসনভিত্তিক নির্দিষ্ট যাত্রী তালিকা ও এক্সপোর্ট (Seat Data Export)
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+                    কোন সিটে কোন ব্যক্তি বসছেন (নাম, মোবাইল নম্বর, লিঙ্গ, বোর্ডিং পয়েন্ট, খাবার পছন্দ) এবং খালি সিটের জন্য স্পষ্ট “খালি (Empty)” সহ ৪০টি আসনের সম্পূর্ণ তালিকা এক্সেল (.CSV) ফাইল বা প্রিন্ট ভিউতে এক্সপোর্ট করুন।
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3">
+                  <button
+                    onClick={() => setIsSeatExportModalOpen(true)}
+                    className="px-5 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-blue-600/30 flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
+                  >
+                    <Printer className="w-4 h-4" />
+                    <span>এক নজরে চার্ট ও প্রিন্ট ভিউ</span>
+                  </button>
+
+                  <button
+                    onClick={exportAllSeatsCSV}
+                    className="px-5 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-emerald-600/30 flex items-center gap-2 transition-all active:scale-95 cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>সিট ডেটা এক্সেল (.CSV) নামান</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Quick 40-Seat Stats Overview */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-800/80">
+                <div className="p-3 rounded-xl bg-slate-950/60 border border-slate-800">
+                  <span className="text-[11px] text-slate-400 block">মোট বাসের সিট</span>
+                  <span className="text-base font-bold font-mono text-white">৪০ টি (A1-J4)</span>
+                </div>
+                <div className="p-3 rounded-xl bg-sky-950/40 border border-sky-500/30">
+                  <span className="text-[11px] text-sky-300 block">বুকড আসন</span>
+                  <span className="text-base font-bold font-mono text-sky-400">
+                    {seats.filter(s => s.status === 'booked').length} জন
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30">
+                  <span className="text-[11px] text-emerald-300 block">খালি আসন (Empty)</span>
+                  <span className="text-base font-bold font-mono text-emerald-400">
+                    {seats.filter(s => s.status === 'available').length} টি
+                  </span>
+                </div>
+                <div className="p-3 rounded-xl bg-purple-950/40 border border-purple-500/30">
+                  <span className="text-[11px] text-purple-300 block">অন্যান্য রিপোর্ট</span>
+                  <button
+                    onClick={exportParticipantsCSV}
+                    className="text-xs text-purple-300 hover:text-white underline font-bold mt-0.5 block cursor-pointer"
+                  >
+                    বুকিং সামারি CSV ↗
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Embedded Live 40-Seat Table View */}
+            <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                  <h4 className="text-base font-bold text-white font-sans flex items-center gap-2">
+                    <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                    <span>৪০টি বাসের আসনের পূর্ণাঙ্গ তালিকা (A1 থেকে J4)</span>
+                  </h4>
+                  <p className="text-xs text-slate-400">
+                    প্রতিটি আসনের নির্দিষ্ট যাত্রী এবং খালি আসনগুলোর স্পষ্ট তালিকা:
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={exportAllSeatsCSV}
+                    className="px-3.5 py-2 rounded-xl bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/30 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>এক্সেল এক্সপোর্ট</span>
+                  </button>
+                  <button
+                    onClick={() => setIsSeatExportModalOpen(true)}
+                    className="px-3.5 py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    <span>ফুল স্ক্রিন ও প্রিন্ট</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Table rendering 40 seats */}
+              <div className="overflow-x-auto rounded-2xl border border-slate-800">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-950 text-slate-400 text-[11px]">
+                    <tr>
+                      <th className="p-3 font-bold w-16 text-center">আসন</th>
+                      <th className="p-3 font-bold w-24">অবস্থা</th>
+                      <th className="p-3 font-bold">যাত্রীর নাম</th>
+                      <th className="p-3 font-bold w-32">মোবাইল নম্বর</th>
+                      <th className="p-3 font-bold w-20 text-center">লিঙ্গ</th>
+                      <th className="p-3 font-bold w-24">বুকিং কোড</th>
+                      <th className="p-3 font-bold">বোর্ডিং পয়েন্ট</th>
+                      <th className="p-3 font-bold w-24">খাবার পছন্দ</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800/80 text-[11.5px]">
+                    {seats.map((seat) => {
+                      const matchingBooking = bookings.find(
+                        (b) => b.seatNumbers.includes(seat.number) && b.paymentStatus !== 'বাতিল'
+                      );
+                      const specificPassenger = matchingBooking?.passengers?.find(
+                        (p) => p.seatNumber === seat.number
+                      );
+
+                      const isAvailable = seat.status === 'available' && !matchingBooking;
+                      const isBooked = seat.status === 'booked' || matchingBooking?.paymentStatus === 'নিশ্চিত';
+                      const isReserved = seat.status === 'reserved' || matchingBooking?.paymentStatus === 'অপেক্ষমাণ';
+
+                      const passengerName = specificPassenger?.name || seat.passengerName || seat.bookedBy?.name || matchingBooking?.name || '— (খালি)';
+                      const phone = specificPassenger?.phone || seat.bookedBy?.phone || matchingBooking?.phone || '—';
+                      const gender = specificPassenger?.gender || seat.gender || seat.bookedBy?.gender || matchingBooking?.gender || '—';
+                      const bookingCode = matchingBooking?.bookingCode || seat.bookedBy?.bookingId || '—';
+                      const boardingPoint = matchingBooking?.boardingPoint || (isAvailable ? '—' : settings.meetingPoint);
+                      const dietaryPref = specificPassenger?.dietaryPreference || matchingBooking?.dietaryPreference || (isAvailable ? '—' : 'সাধারণ');
+                      const isFemale = gender === 'মহিলা' || gender === 'নারী' || gender === 'female';
+
+                      return (
+                        <tr
+                          key={seat.id}
+                          className={`transition-colors ${
+                            isAvailable
+                              ? 'bg-emerald-950/10 hover:bg-emerald-950/20 text-slate-400'
+                              : isBooked
+                              ? isFemale
+                                ? 'bg-rose-950/15 hover:bg-rose-950/25 text-slate-200'
+                                : 'bg-sky-950/15 hover:bg-sky-950/25 text-slate-200'
+                              : 'bg-amber-950/15 hover:bg-amber-950/25 text-slate-300'
+                          }`}
+                        >
+                          <td className="p-3 text-center">
+                            <span
+                              className={`inline-flex items-center justify-center font-mono font-extrabold px-2 py-0.5 rounded text-xs border ${
+                                isAvailable
+                                  ? 'bg-emerald-900/40 text-emerald-400 border-emerald-600/40'
+                                  : isBooked
+                                  ? isFemale
+                                    ? 'bg-rose-600 text-white border-rose-500 shadow-xs'
+                                    : 'bg-blue-600 text-white border-blue-500 shadow-xs'
+                                  : 'bg-amber-600 text-white border-amber-500'
+                              }`}
+                            >
+                              {seat.label}
+                            </span>
+                          </td>
+
+                          <td className="p-3">
+                            {isAvailable ? (
+                              <span className="text-emerald-400 font-bold">🟢 খালি (Empty)</span>
+                            ) : isBooked ? (
+                              <span className="text-sky-300 font-bold">{isFemale ? '👩 নিশ্চিত' : '👨 নিশ্চিত'}</span>
+                            ) : (
+                              <span className="text-amber-400 font-bold">⏳ অপেক্ষমাণ</span>
+                            )}
+                          </td>
+
+                          <td className="p-3">
+                            {isAvailable ? (
+                              <span className="italic text-slate-500">খালি আসন</span>
+                            ) : (
+                              <div className="font-bold text-white flex items-center gap-1.5">
+                                <span>{passengerName}</span>
+                                {matchingBooking && matchingBooking.name !== passengerName && (
+                                  <span className="text-[9.5px] px-1 rounded bg-slate-800 text-slate-400 font-normal">
+                                    (বুককারী: {matchingBooking.name})
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </td>
+
+                          <td className="p-3 font-mono">
+                            {isAvailable ? <span className="text-slate-600">—</span> : <span className="text-slate-200">{phone}</span>}
+                          </td>
+
+                          <td className="p-3 text-center">
+                            {isAvailable ? (
+                              <span className="text-slate-600">—</span>
+                            ) : isFemale ? (
+                              <span className="text-rose-300 font-bold">নারী</span>
+                            ) : (
+                              <span className="text-sky-300 font-bold">পুরুষ</span>
+                            )}
+                          </td>
+
+                          <td className="p-3 font-mono">
+                            {isAvailable ? (
+                              <span className="text-slate-600">—</span>
+                            ) : (
+                              <span className="text-emerald-400 font-bold">{bookingCode}</span>
+                            )}
+                          </td>
+
+                          <td className="p-3">
+                            {isAvailable ? (
+                              <span className="text-slate-600">—</span>
+                            ) : (
+                              <span className="text-slate-300 truncate block max-w-[180px]">{boardingPoint}</span>
+                            )}
+                          </td>
+
+                          <td className="p-3">
+                            {isAvailable ? (
+                              <span className="text-slate-600">—</span>
+                            ) : (
+                              <span className="px-1.5 py-0.5 rounded bg-slate-800 text-amber-300 border border-slate-700 text-[10.5px]">
+                                {dietaryPref}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {/* Fallback for other tabs like 'অংশগ্রহণকারী', 'খাবার', 'পরিবহন ও বোর্ডিং' */}
+        {['ট্যুর ব্যবস্থাপনা', 'অংশগ্রহণকারী', 'পেমেন্ট', 'খাবার', 'পরিবহন ও বোর্ডিং'].includes(activeTab) && (
           <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 space-y-6">
             <div className="flex justify-between items-center border-b border-slate-800 pb-4">
               <div>
@@ -2553,6 +3095,12 @@ export const AdminLayout: React.FC = () => {
         onClose={() => setIsBatchPrintModalOpen(false)}
         targetBookingId={printBookingId}
         selectedBookingIds={selectedBookingIds}
+      />
+
+      {/* Seat Data Export & Detail View Modal */}
+      <SeatDataExportModal
+        isOpen={isSeatExportModalOpen}
+        onClose={() => setIsSeatExportModalOpen(false)}
       />
 
     </div>

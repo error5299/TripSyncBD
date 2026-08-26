@@ -5,7 +5,7 @@ export const initialTourSettings: TourSettings = {
   tourSubtitle: 'আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ হয়ে টাঙ্গুয়ার হাওর',
   tourDates: '৩ সেপ্টেম্বর ২০২৬ (তারিখ পরিবর্তন হতে পারে)',
   departureTime: '৩ সেপ্টেম্বর ২০২৬ (বিকাল/সন্ধ্যা যাত্রা)',
-  totalSeats: 40,
+  totalSeats: 41,
   pricePerPerson: 2699,
   organizerName: 'হাওর অভিযান টিম',
   organizerPhone: '+880 1713-935162',
@@ -14,17 +14,31 @@ export const initialTourSettings: TourSettings = {
   nagadNumber: '01713-935162 (পার্সোনাল)',
   bankDetails: 'ডাচ-বাংলা ব্যাংক, অ্যাকাউন্ট: ১২৩.১০১.৪৫৬৭৮৯',
   meetingPoint: 'আল্লারদর্গা, কুষ্টিয়া (ভেড়ামারা - পাবনা - সিরাজগঞ্জ থেকেও ওঠা যাবে)',
+  backRowSeatCount: 5,
 };
 
-// Initial 40 seats for standard 40-seater luxury coach - all available at start
-export const generateInitialSeats = (): Seat[] => {
+// Initial seats for luxury coach: first 4 rows A-D unchanged, J configurable, optional K row with 5 seats
+export const generateInitialSeats = (hasKRow: boolean = false, backRowSeatCount: number = 5): Seat[] => {
   const seats: Seat[] = [];
   const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+  if (hasKRow) {
+    rows.push('K');
+  }
   let seatNumber = 1;
 
   for (let r = 0; r < rows.length; r++) {
-    for (let c = 1; c <= 4; c++) {
-      const label = `${rows[r]}${c}`;
+    const rowLetter = rows[r];
+    const isKRow = rowLetter === 'K';
+    const isJRow = rowLetter === 'J';
+    let seatsInThisRow = 4;
+    if (isKRow) {
+      seatsInThisRow = 5; // K line has 5 seats
+    } else if (isJRow) {
+      seatsInThisRow = backRowSeatCount;
+    }
+
+    for (let c = 1; c <= seatsInThisRow; c++) {
+      const label = `${rowLetter}${c}`;
       seats.push({
         id: seatNumber,
         label,

@@ -28,7 +28,7 @@ const MainContent: React.FC = () => {
       {isAdminView ? (
         <AdminLayout />
       ) : (
-        <div className="min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-sky-500 selection:text-white flex flex-col">
+        <div className="website-page-content min-h-screen bg-slate-50 text-slate-900 font-sans selection:bg-sky-500 selection:text-white flex flex-col print:hidden">
           {/* 1. Transparent Navigation */}
           <Navbar />
 

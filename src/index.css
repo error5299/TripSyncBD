@@ -66,28 +66,137 @@
   background: #059669;
 }
 
+/* ========================================================================= */
+/* UNIVERSAL BULLETPROOF PRINT STYLES - ISOLATES EXPORTS & TICKETS ONLY */
+/* ========================================================================= */
 @media print {
-  body * {
-    visibility: hidden !important;
+  /* 1. Hide the entire background website, sidebars, headers, and non-printable UI */
+  .no-print,
+  .print\:hidden,
+  #app-website-root,
+  .website-page-content,
+  .admin-main-view,
+  .admin-sidebar-view,
+  nav,
+  header,
+  aside,
+  button,
+  input,
+  select,
+  textarea,
+  .no-print-area {
+    display: none !important;
   }
-  #batch-ticket-print-area, #batch-ticket-print-area * {
-    visibility: visible !important;
-  }
-  #batch-ticket-print-area {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
+
+  /* 2. Global Reset & Print Color Rendering */
+  html, body {
     width: 100% !important;
-    background: white !important;
+    min-height: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    overflow: visible !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  #root {
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    background: #ffffff !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 3. Reset Modal Backdrops so printable content flows directly into the document */
+  .fixed,
+  .sticky {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    transform: none !important;
+    animation: none !important;
     padding: 0 !important;
     margin: 0 !important;
   }
+
+  /* 4. Display the designated printable container cleanly */
+  #printable-ticket-area,
+  #batch-ticket-print-area,
+  #printable-seat-chart,
+  .printable-area {
+    display: block !important;
+    visibility: visible !important;
+    position: static !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  /* 5. A4 Multi-page batch printing */
   .print-a4-page {
     page-break-after: always !important;
     break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
     margin: 0 auto !important;
+    padding: 8mm !important;
+    background: #ffffff !important;
     box-shadow: none !important;
     border: none !important;
+    box-sizing: border-box !important;
+  }
+
+  /* 6. Single Ticket Horizontal Card layout */
+  .ticket-horizontal-card {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 7. Tables for Seat Chart / Reports */
+  table {
+    page-break-inside: auto;
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+
+  tr, th, td {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tfoot {
+    display: table-footer-group !important;
+  }
+
+  @page {
+    size: auto;
+    margin: 8mm 8mm 8mm 8mm;
   }
 }
 
