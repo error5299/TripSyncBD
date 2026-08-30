@@ -265,7 +265,18 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // 1. Tour Settings Live Subscription
     const unsubSettings = onSnapshot(doc(db, 'tour_data', 'settings'), (docSnap) => {
       if (docSnap.exists()) {
-        setSettings(docSnap.data() as TourSettings);
+        const data = docSnap.data() as TourSettings;
+        if (data.tourDates && data.tourDates.includes('৩ সেপ্টেম্বর')) {
+          const updated: TourSettings = {
+            ...data,
+            tourDates: data.tourDates.replace(/৩ সেপ্টেম্বর/g, '১ সেপ্টেম্বর'),
+            departureTime: data.departureTime ? data.departureTime.replace(/৩ সেপ্টেম্বর/g, '১ সেপ্টেম্বর') : '১ সেপ্টেম্বর ২০২৬ (বিকাল/সন্ধ্যা যাত্রা)'
+          };
+          setSettings(updated);
+          setDoc(doc(db, 'tour_data', 'settings'), sanitizeForFirestore(updated)).catch(console.error);
+        } else {
+          setSettings(data);
+        }
       } else {
         // Initialize default in Firestore
         setDoc(doc(db, 'tour_data', 'settings'), sanitizeForFirestore(initialTourSettings)).catch(console.error);

@@ -10,7 +10,7 @@ export const FloatingInfo: React.FC = () => {
       icon: Calendar,
       title: 'ভ্রমণের সময়কাল',
       value: '২ রাত ১ দিন ডে ট্যুর',
-      subValue: 'যাত্রা: ৩ সেপ্টেম্বর ২০২৬',
+      subValue: 'যাত্রা: ১ সেপ্টেম্বর ২০২৬',
       color: 'text-emerald-700',
       bgColor: 'bg-emerald-50',
     },

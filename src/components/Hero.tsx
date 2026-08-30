@@ -131,7 +131,7 @@ export const Hero: React.FC = () => {
                 <div className="min-w-0">
                   <div className="text-[11px] text-slate-400 font-semibold uppercase">যাত্রার তারিখ</div>
                   <div className="text-xs sm:text-sm font-bold text-white truncate">
-                    ৩ সেপ্টেম্বর ২০২৬
+                    ১ সেপ্টেম্বর ২০২৬
                   </div>
                   <div className="text-[10px] text-amber-300 font-medium">তারিখ পরিবর্তন হতে পারে</div>
                 </div>

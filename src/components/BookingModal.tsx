@@ -326,7 +326,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
 
           <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5">
             <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-            <span>যাত্রার রুট: আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ ➔ টাঙ্গুয়ার হাওর (৩ সেপ্টেম্বর ২০২৬)</span>
+            <span>যাত্রার রুট: আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ ➔ টাঙ্গুয়ার হাওর (১ সেপ্টেম্বর ২০২৬)</span>
           </p>
 
           {/* Stepper Progress Bar */}

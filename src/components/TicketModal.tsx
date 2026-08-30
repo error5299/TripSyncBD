@@ -154,7 +154,7 @@ export const TicketModal: React.FC = () => {
                       {settings.tourTitle}
                     </h4>
                     <p className="text-[7px] text-amber-800 leading-tight truncate font-medium">
-                      কুষ্টিয়া ⇄ টাঙ্গুয়ার হাওর • ৩ সেপ্টে ২০২৬
+                      কুষ্টিয়া ⇄ টাঙ্গুয়ার হাওর • ২ সেপ্টে ২০২৬
                     </p>
                   </div>
 
