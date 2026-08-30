@@ -42,8 +42,8 @@ export const SeatSelector: React.FC = () => {
         
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center mb-14">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100/80 text-emerald-900 text-xs font-semibold mb-3">
-            <Armchair className="w-3.5 h-3.5 text-emerald-700" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100/90 text-amber-950 text-xs font-semibold mb-3 border border-amber-300">
+            <Armchair className="w-3.5 h-3.5 text-amber-700" />
             <span>লাইভ সিট প্ল্যান ও জেন্ডার ইন্ডিকেটর</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-tight font-sans">
@@ -57,30 +57,30 @@ export const SeatSelector: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center max-w-6xl mx-auto">
           
           {/* Stylized Bus Interactive Visual Map */}
-          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-slate-200/80 relative">
+          <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 shadow-xl border border-amber-200/80 relative">
             
             {/* Bus Header (Driver & Door indicator) */}
             <div className="flex items-center justify-between pb-5 mb-5 border-b border-slate-100">
               <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
-                <Compass className="w-4 h-4 text-emerald-700 animate-spin" style={{ animationDuration: '8s' }} />
+                <Compass className="w-4 h-4 text-amber-700 animate-spin" style={{ animationDuration: '8s' }} />
                 <span>বাসের সম্মুখভাগ (ড্রাইভার সাইড)</span>
               </div>
-              <div className="px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200">
+              <div className="px-3 py-1 rounded-full bg-amber-50 text-amber-900 text-xs font-bold border border-amber-200">
                 প্রবেশ দ্বার ➔
               </div>
             </div>
 
             {/* Status Legend with Gender Indicator */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-6 p-3 rounded-2xl bg-slate-50 border border-slate-100 text-xs font-semibold">
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 mb-6 p-3 rounded-2xl bg-amber-50/50 border border-amber-100 text-xs font-semibold">
               <div className="flex items-center gap-2 p-1.5 rounded-xl bg-white border border-slate-200 shadow-xs">
-                <div className="w-4 h-4 rounded-md bg-white border-2 border-emerald-500 shrink-0" />
+                <div className="w-4 h-4 rounded-md bg-white border-2 border-amber-500 shrink-0" />
                 <span className="text-slate-800">খালি ({stats.availableSeats})</span>
               </div>
               <div className="flex items-center gap-2 p-1.5 rounded-xl bg-white border border-slate-200 shadow-xs">
-                <div className="w-4 h-4 rounded-md bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">✓</div>
+                <div className="w-4 h-4 rounded-md bg-amber-500 text-slate-950 flex items-center justify-center text-[10px] font-black shrink-0">✓</div>
                 <span className="text-slate-800">নির্বাচিত</span>
               </div>
-              <div className="flex items-center gap-2 p-1.5 rounded-xl bg-amber-50 border border-amber-300 shadow-xs">
+              <div className="flex items-center gap-2 p-1.5 rounded-xl bg-amber-100 border border-amber-300 shadow-xs">
                 <div className="w-4 h-4 rounded-md bg-amber-400 text-amber-950 flex items-center justify-center text-[9px] font-bold shrink-0">⏳</div>
                 <span className="text-amber-950 font-bold">অপেক্ষমাণ ({stats.pendingBookings})</span>
               </div>
@@ -116,16 +116,16 @@ export const SeatSelector: React.FC = () => {
                       key={seat.id}
                       disabled={isBooked || isReserved}
                       onClick={() => handleSeatClick(seat)}
-                      className={`relative flex flex-col items-center justify-center w-12 sm:w-14 h-12 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm ${
+                      className={`relative flex flex-col items-center justify-center w-12 sm:w-14 h-12 rounded-xl text-xs font-bold transition-all duration-200 shadow-sm cursor-pointer ${
                         isSelected
-                          ? 'bg-emerald-600 text-white ring-4 ring-emerald-300 scale-105 shadow-md z-10'
+                          ? 'bg-amber-500 text-slate-950 ring-4 ring-amber-300 scale-105 shadow-md z-10 font-black'
                           : isFemaleBooked
                           ? 'bg-rose-50 text-rose-800 border-2 border-rose-300 cursor-not-allowed'
                           : isMaleBooked
                           ? 'bg-sky-50 text-sky-800 border-2 border-sky-300 cursor-not-allowed'
                           : isReserved
                           ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
-                          : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50'
+                          : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-amber-500 hover:bg-amber-50/70'
                       }`}
                       title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করে নির্বাচন করুন)'}`}
                     >
@@ -146,7 +146,7 @@ export const SeatSelector: React.FC = () => {
                         </>
                       ) : (
                         <>
-                          <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-white' : 'text-emerald-700'}`} />
+                          <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-slate-950' : 'text-amber-700'}`} />
                           <span>{seat.label}</span>
                         </>
                       )}
@@ -195,7 +195,7 @@ export const SeatSelector: React.FC = () => {
 
             {/* Privacy & Safety Note */}
             <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-[11px] text-slate-600 font-medium">
-              <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+              <ShieldCheck className="w-4 h-4 text-amber-600 shrink-0" />
               <span>নারী যাত্রীদের সুবিধার্থে পাশের সিটের বুকিংয়ের তথ্য স্পষ্টভাবে দেখানো হয়েছে।</span>
             </div>
             
@@ -203,10 +203,10 @@ export const SeatSelector: React.FC = () => {
 
           {/* Seat Details & Action Summary */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-slate-200 space-y-6">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-lg border border-amber-200/80 space-y-6">
               
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold">
+                <div className="w-12 h-12 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold border border-amber-300/60">
                   <Armchair className="w-6 h-6" />
                 </div>
                 <div>
@@ -220,10 +220,10 @@ export const SeatSelector: React.FC = () => {
               </div>
 
               {selectedSeat ? (
-                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-3">
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 space-y-3">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-slate-800 font-medium">নির্বাচিত সিট:</span>
-                    <span className="text-lg font-bold text-emerald-800">
+                    <span className="text-lg font-bold text-amber-900">
                       {seats.find(s => s.number === selectedSeat)?.label} (সিট #{selectedSeat})
                     </span>
                   </div>
@@ -233,9 +233,9 @@ export const SeatSelector: React.FC = () => {
                       ৳{settings.pricePerPerson.toLocaleString('bn-BD')} টাকা
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs text-slate-700 pt-2 border-t border-emerald-200/60">
+                  <div className="flex items-center justify-between text-xs text-slate-700 pt-2 border-t border-amber-200/60">
                     <span>স্ট্যাটাস:</span>
-                    <span className="font-semibold text-emerald-800">বুকিংয়ের জন্য প্রস্তুত</span>
+                    <span className="font-semibold text-amber-900">বুকিংয়ের জন্য প্রস্তুত</span>
                   </div>
                 </div>
               ) : (
@@ -248,15 +248,15 @@ export const SeatSelector: React.FC = () => {
               {/* Instructions */}
               <div className="space-y-2 text-xs text-slate-700">
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-600" />
                   <span>সিট খালী থাকা সাপেক্ষে বুকিং কনফার্ম করা হবে।</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-600" />
                   <span>একাধিক সিট বুকিং করলে প্রতি যাত্রীর নাম ও তথ্য দিতে হবে।</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-amber-600" />
                   <span>মৌখিক বুকিং গ্রহণযোগ্য নয়, পেমেন্টের মাধ্যমে নিশ্চিত করুন।</span>
                 </div>
               </div>
@@ -286,10 +286,10 @@ export const SeatSelector: React.FC = () => {
 
               <button
                 onClick={handleProceedBooking}
-                className="w-full py-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base shadow-lg shadow-emerald-700/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-base shadow-lg shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 group cursor-pointer"
               >
                 <span>{selectedSeat ? 'এই আসনটি বুক করুন' : 'সিট বুকিং পোর্টাল খুলুন'}</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform text-slate-950" />
               </button>
 
             </div>

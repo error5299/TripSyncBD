@@ -17,8 +17,8 @@ export const Footer: React.FC = () => {
 
   return (
     <footer className="bg-slate-950 text-slate-300 border-t border-slate-800/80 relative overflow-hidden">
-      {/* Decorative subtle emerald glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-32 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Decorative subtle amber glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 pb-12 border-b border-slate-800">
@@ -26,7 +26,7 @@ export const Footer: React.FC = () => {
           {/* Brand & Narrative */}
           <div className="lg:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="h-12 px-2.5 rounded-xl bg-white p-1 shadow-lg border border-slate-800 overflow-hidden flex items-center justify-center">
+              <div className="h-12 px-2.5 rounded-xl bg-white p-1 shadow-lg border border-amber-300 overflow-hidden flex items-center justify-center">
                 <img 
                   src="https://www.belayet.pro.bd/wp-content/uploads/2026/08/PTTI-Web.png"
                   alt="Logo"
@@ -38,7 +38,7 @@ export const Footer: React.FC = () => {
                 <span className="text-xl font-bold text-white block leading-none font-sans">
                   {settings.tourTitle}
                 </span>
-                <span className="text-xs text-emerald-400 font-medium">
+                <span className="text-xs text-amber-400 font-semibold">
                   {settings.tourSubtitle}
                 </span>
               </div>
@@ -53,7 +53,7 @@ export const Footer: React.FC = () => {
                 href="https://facebook.com"
                 target="_blank"
                 rel="noreferrer"
-                className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 hover:border-emerald-500 hover:bg-emerald-600/20 text-slate-300 hover:text-emerald-300 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 hover:border-amber-500 hover:bg-amber-600/20 text-slate-300 hover:text-amber-300 flex items-center justify-center transition-colors"
                 aria-label="Facebook"
               >
                 <Facebook className="w-4 h-4" />
@@ -80,7 +80,7 @@ export const Footer: React.FC = () => {
                 href={`https://wa.me/${settings.organizerPhone.replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noreferrer"
-                className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 hover:border-emerald-500 hover:bg-emerald-600/20 text-slate-300 hover:text-emerald-300 flex items-center justify-center transition-colors"
+                className="w-9 h-9 rounded-full bg-slate-900 border border-slate-800 hover:border-amber-500 hover:bg-amber-600/20 text-slate-300 hover:text-amber-300 flex items-center justify-center transition-colors"
                 aria-label="WhatsApp"
               >
                 <MessageCircle className="w-4 h-4" />
@@ -98,9 +98,9 @@ export const Footer: React.FC = () => {
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-slate-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5"
+                    className="text-slate-400 hover:text-amber-300 transition-colors flex items-center gap-1.5"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500/50" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                     <span>{link.name}</span>
                   </a>
                 </li>
@@ -115,26 +115,26 @@ export const Footer: React.FC = () => {
             </h4>
             <ul className="space-y-3 text-sm text-slate-400">
               <li className="flex items-start gap-3">
-                <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <span>
                   <strong className="text-white block font-medium">{settings.organizerName}</strong>
                   <span>অভিজ্ঞ ট্যুর সমন্বয়ক ও বিশ্বস্ত ব্যবস্থাপনা</span>
                 </span>
               </li>
               <li className="flex items-center gap-3">
-                <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
+                <Phone className="w-4 h-4 text-amber-400 shrink-0" />
                 <a href={`tel:${settings.organizerPhone}`} className="hover:text-white transition-colors">
                   {settings.organizerPhone}
                 </a>
               </li>
               <li className="flex items-center gap-3">
-                <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
+                <Mail className="w-4 h-4 text-amber-400 shrink-0" />
                 <a href={`mailto:${settings.organizerEmail}`} className="hover:text-white transition-colors">
                   {settings.organizerEmail}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <span>{settings.meetingPoint}</span>
               </li>
             </ul>
@@ -156,7 +156,7 @@ export const Footer: React.FC = () => {
               href="https://www.belayet.pro.bd"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-200 hover:text-emerald-400 font-semibold transition-colors underline"
+              className="text-amber-400 hover:text-amber-300 font-semibold transition-colors underline"
             >
               বেলায়েত হোসেন
             </a>

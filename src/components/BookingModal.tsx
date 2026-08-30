@@ -300,18 +300,18 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
       >
         
         {/* Header */}
-        <div className="bg-gradient-to-r from-emerald-50/90 via-teal-50/70 to-sky-50/60 p-4 sm:p-5 relative shrink-0 border-b border-slate-200">
+        <div className="bg-gradient-to-r from-amber-50/90 via-yellow-50/70 to-amber-50/60 p-4 sm:p-5 relative shrink-0 border-b border-amber-200">
           <button
             onClick={closeBookingModal}
             id="close-booking-modal-btn"
-            className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200 shadow-xs transition-colors"
+            className="absolute top-4 right-4 p-2 rounded-full bg-white hover:bg-slate-100 text-slate-600 hover:text-slate-900 border border-amber-200 shadow-xs transition-colors"
             aria-label="বন্ধ করুন"
           >
             <X className="w-5 h-5" />
           </button>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100/90 text-emerald-900 text-xs font-bold mb-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-700" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/90 text-amber-950 text-xs font-bold mb-1.5 border border-amber-300">
+            <ShieldCheck className="w-3.5 h-3.5 text-amber-700" />
             <span>অফিসিয়াল সিট বুকিং পোর্টাল</span>
           </div>
 
@@ -319,25 +319,25 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
             <h3 className="text-lg sm:text-xl font-bold font-sans text-slate-900">
               {settings.tourTitle}
             </h3>
-            <span className="text-xs sm:text-sm font-bold text-emerald-800 bg-white px-2.5 py-0.5 rounded-lg border border-emerald-200 inline-block w-fit">
+            <span className="text-xs sm:text-sm font-bold text-amber-950 bg-white px-2.5 py-0.5 rounded-lg border border-amber-300 inline-block w-fit">
               জনপ্রতি ৳{settings.pricePerPerson.toLocaleString('bn-BD')} টাকা
             </span>
           </div>
 
           <p className="text-xs text-slate-600 mt-1 flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <MapPin className="w-3.5 h-3.5 text-amber-600 shrink-0" />
             <span>যাত্রার রুট: আল্লারদর্গা - ভেড়ামারা - পাবনা - সিরাজগঞ্জ ➔ টাঙ্গুয়ার হাওর (১ সেপ্টেম্বর ২০২৬)</span>
           </p>
 
           {/* Stepper Progress Bar */}
           {step !== 4 && (
-            <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-slate-200/80 text-xs">
+            <div className="grid grid-cols-3 gap-2 mt-3 pt-2.5 border-t border-amber-200/80 text-xs">
               <button
                 type="button"
                 onClick={() => setStep(1)}
                 className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-bold transition-all text-center ${
                   step === 1 
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20' 
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/25' 
                     : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
                 }`}
               >
@@ -351,7 +351,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 disabled={selectedSeatNumbers.length === 0}
                 className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-bold transition-all text-center ${
                   step === 2 
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20' 
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/25' 
                     : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white'
                 }`}
               >
@@ -365,7 +365,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 disabled={!name || !phone || selectedSeatNumbers.length === 0}
                 className={`flex items-center justify-center gap-1.5 py-2 px-2 rounded-xl font-bold transition-all text-center ${
                   step === 3 
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20' 
+                    ? 'bg-amber-500 text-slate-950 font-black shadow-md shadow-amber-500/25' 
                     : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 disabled:opacity-40 disabled:hover:bg-white'
                 }`}
               >
@@ -392,10 +392,10 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
             <div className="space-y-4">
               
               {/* Header Box */}
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-emerald-50/70 p-3.5 rounded-2xl border border-emerald-200">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200">
                 <div>
                   <h4 className="text-sm sm:text-base font-bold text-slate-900 font-sans flex items-center gap-1.5">
-                    <Armchair className="w-4 h-4 text-emerald-700" />
+                    <Armchair className="w-4 h-4 text-amber-700" />
                     <span>বাসের আসন পছন্দ করুন</span>
                   </h4>
                   <p className="text-xs text-slate-600 mt-0.5">
@@ -405,7 +405,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
 
                 <div className="sm:text-right">
                   <span className="text-[11px] text-slate-600 block">বাছাইকৃত সিট:</span>
-                  <span className="text-sm font-bold text-emerald-800 font-mono">
+                  <span className="text-sm font-bold text-amber-950 font-mono">
                     {selectedSeatNumbers.length > 0 
                       ? `${selectedSeatNumbers.length} টি (${selectedSeatNumbers.map(n => seats.find(s => s.number === n)?.label).join(', ')})`
                       : 'কোনো সিট সিলেক্ট করেননি'}
@@ -419,13 +419,13 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                   <div className="w-3.5 h-3.5 rounded bg-white border-2 border-slate-300 shrink-0" />
                   <span className="text-slate-700">খালি আসন</span>
                 </div>
-                <div className="flex items-center gap-1.5 p-2 rounded-xl bg-emerald-50 border border-emerald-300">
-                  <div className="w-3.5 h-3.5 rounded bg-emerald-600 text-white flex items-center justify-center text-[9px] font-bold shrink-0">✓</div>
-                  <span className="text-emerald-900 font-bold">নির্বাচিত</span>
+                <div className="flex items-center gap-1.5 p-2 rounded-xl bg-amber-100 border border-amber-400">
+                  <div className="w-3.5 h-3.5 rounded bg-amber-500 text-slate-950 flex items-center justify-center text-[9px] font-black shrink-0">✓</div>
+                  <span className="text-amber-950 font-bold">নির্বাচিত</span>
                 </div>
-                <div className="flex items-center gap-1.5 p-2 rounded-xl bg-amber-50 border border-amber-300">
-                  <div className="w-3.5 h-3.5 rounded bg-amber-400 text-amber-950 flex items-center justify-center text-[9px] font-bold shrink-0">⏳</div>
-                  <span className="text-amber-950 font-bold">অপেক্ষমাণ ({pendingReservedCount})</span>
+                <div className="flex items-center gap-1.5 p-2 rounded-xl bg-orange-50 border border-orange-300">
+                  <div className="w-3.5 h-3.5 rounded bg-orange-400 text-slate-950 flex items-center justify-center text-[9px] font-bold shrink-0">⏳</div>
+                  <span className="text-orange-950 font-bold">অপেক্ষমাণ ({pendingReservedCount})</span>
                 </div>
                 <div className="flex items-center gap-1.5 p-2 rounded-xl bg-sky-50 border border-sky-200">
                   <div className="w-3.5 h-3.5 rounded bg-sky-600 text-white flex items-center justify-center text-[9px] font-bold shrink-0">👨</div>
@@ -441,10 +441,10 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
               <div className="p-4 rounded-2xl bg-slate-50 border-2 border-slate-200/90 space-y-3 shadow-inner">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-200 text-xs font-bold text-slate-700">
                   <div className="flex items-center gap-1.5 bg-white px-2.5 py-1 rounded-lg border border-slate-200 shadow-xs">
-                    <Compass className="w-3.5 h-3.5 text-emerald-600 animate-spin" style={{ animationDuration: '8s' }} />
+                    <Compass className="w-3.5 h-3.5 text-amber-600 animate-spin" style={{ animationDuration: '8s' }} />
                     <span>বাসের সম্মুখভাগ (ড্রাইভার সাইড)</span>
                   </div>
-                  <span className="bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-emerald-800 text-[11px] shadow-xs">
+                  <span className="bg-white px-2.5 py-1 rounded-lg border border-slate-200 text-amber-800 text-[11px] shadow-xs font-bold">
                     প্রবেশ দরজা ➔
                   </span>
                 </div>
@@ -471,16 +471,16 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                           type="button"
                           disabled={isBooked || isReserved}
                           onClick={() => toggleSeatSelection(seat.number)}
-                          className={`w-11 sm:w-13 h-11 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center shadow-xs ${
+                          className={`w-11 sm:w-13 h-11 rounded-xl text-xs font-bold transition-all flex flex-col items-center justify-center shadow-xs cursor-pointer ${
                             isSelected
-                              ? 'bg-emerald-600 text-white ring-4 ring-emerald-300 font-extrabold scale-105 shadow-md z-10'
+                              ? 'bg-amber-500 text-slate-950 ring-4 ring-amber-300 font-black scale-105 shadow-md z-10'
                               : isFemaleBooked
                               ? 'bg-rose-50 text-rose-900 border-2 border-rose-300 cursor-not-allowed'
                               : isMaleBooked
                               ? 'bg-sky-50 text-sky-900 border-2 border-sky-300 cursor-not-allowed'
                               : isReserved
-                              ? 'bg-amber-100 text-amber-950 border-2 border-amber-400 cursor-not-allowed'
-                              : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-emerald-500 hover:bg-emerald-50 active:scale-95'
+                              ? 'bg-orange-100 text-orange-950 border-2 border-orange-400 cursor-not-allowed'
+                              : 'bg-white text-slate-800 border-2 border-slate-200 hover:border-amber-500 hover:bg-amber-50 active:scale-95'
                           }`}
                           title={`সিট নং ${seat.label} - ${isFemaleBooked ? 'নারী যাত্রী বুকড' : isMaleBooked ? 'পুরুষ যাত্রী বুকড' : isReserved ? 'অপেক্ষমাণ (রিকোয়েস্ট যাচাই চলছে)' : 'খালি (ক্লিক করুন)'}`}
                         >
@@ -501,7 +501,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                             </>
                           ) : (
                             <>
-                              <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-white' : 'text-emerald-700'}`} />
+                              <Armchair className={`w-3.5 h-3.5 mb-0.5 ${isSelected ? 'text-slate-950' : 'text-amber-700'}`} />
                               <span>{seat.label}</span>
                             </>
                           )}
@@ -549,16 +549,16 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
               </div>
 
               {/* Price Calculation Box */}
-              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 flex items-center justify-between">
+              <div className="p-3.5 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 flex items-center justify-between">
                 <div>
                   <span className="text-xs text-slate-600 block">মোট প্রদেয় মূল্য (অফলাইন পেমেন্ট):</span>
-                  <span className="text-xl font-bold text-emerald-950 font-sans">
+                  <span className="text-xl font-bold text-amber-950 font-sans">
                     ৳{totalAmount.toLocaleString('bn-BD')} টাকা
                   </span>
                 </div>
                 <div className="text-right text-xs text-slate-700">
                   <span className="block font-medium">৳{settings.pricePerPerson.toLocaleString('bn-BD')} × {selectedSeatNumbers.length} টি সিট</span>
-                  <span className="text-emerald-800 text-[11px] font-semibold">সকল খরচ ও খাবার অন্তর্ভুক্ত</span>
+                  <span className="text-amber-800 text-[11px] font-bold">সকল খরচ ও খাবার অন্তর্ভুক্ত</span>
                 </div>
               </div>
 
@@ -569,10 +569,10 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                   id="booking-step1-next-btn"
                   disabled={selectedSeatNumbers.length === 0}
                   onClick={handleStep1Next}
-                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-50"
+                  className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-sm shadow-md shadow-amber-500/25 flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
                 >
                   <span>{selectedSeatNumbers.length > 0 ? `যাত্রীর তথ্য দিন (${selectedSeatNumbers.length}টি সিট)` : 'আগে আসন নির্বাচন করুন'}</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-slate-950" />
                 </button>
               </div>
             </div>
@@ -581,9 +581,9 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
           {/* STEP 2: PASSENGER INFORMATION */}
           {step === 2 && (
             <div className="space-y-4">
-              <div className="bg-emerald-50/60 p-3 rounded-2xl border border-emerald-200">
+              <div className="bg-amber-50/70 p-3 rounded-2xl border border-amber-200">
                 <h4 className="text-sm sm:text-base font-bold text-slate-900 font-sans flex items-center gap-2">
-                  <Users className="w-4 h-4 text-emerald-700" />
+                  <Users className="w-4 h-4 text-amber-700" />
                   <span>ভ্রমণকারী ও যাত্রীদের তথ্য ({selectedSeatNumbers.length} জন)</span>
                 </h4>
                 <p className="text-xs text-slate-600 mt-0.5">
@@ -592,15 +592,15 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
               </div>
 
               {/* Passenger 1 */}
-              <div className="p-4 rounded-2xl bg-white border-2 border-emerald-200 shadow-xs space-y-3.5">
+              <div className="p-4 rounded-2xl bg-white border-2 border-amber-300 shadow-xs space-y-3.5">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-100">
                   <span className="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-emerald-600 text-white text-xs flex items-center justify-center font-bold">
+                    <span className="w-5 h-5 rounded-full bg-amber-500 text-slate-950 text-xs flex items-center justify-center font-black">
                       ১
                     </span>
                     <span>প্রধান বুকিংকারী ও যাত্রী ১</span>
                   </span>
-                  <span className="text-xs font-bold text-emerald-800 bg-emerald-100/90 px-2.5 py-0.5 rounded-lg font-mono">
+                  <span className="text-xs font-bold text-amber-950 bg-amber-100/90 px-2.5 py-0.5 rounded-lg font-mono border border-amber-300">
                     আসন: {seats.find(s => s.number === selectedSeatNumbers[0])?.label || 'সিট #১'}
                   </span>
                 </div>
@@ -608,7 +608,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-emerald-600" />
+                      <User className="w-3.5 h-3.5 text-amber-600" />
                       <span>পূর্ণ নাম *</span>
                     </label>
                     <input
@@ -618,13 +618,13 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                       placeholder="যেমন: তানভীর হাসান"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
 
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5 text-emerald-600" />
+                      <Phone className="w-3.5 h-3.5 text-amber-600" />
                       <span>মোবাইল নম্বর (WhatsApp) *</span>
                     </label>
                     <input
@@ -634,7 +634,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                       placeholder="যেমন: 017XXXXXXXX"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
                     />
                   </div>
                 </div>
@@ -686,13 +686,13 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                      <MapPin className="w-3.5 h-3.5 text-amber-600" />
                       <span>বোর্ডিং পয়েন্ট *</span>
                     </label>
                     <select
                       value={boardingPoint}
                       onChange={(e) => setBoardingPoint(e.target.value)}
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                     >
                       <option value="আল্লারদর্গা (বিকাল ৪:০০ টা)">আল্লারদর্গা (বিকাল ৪:০০ টা)</option>
                       <option value="ভেড়ামারা (বিকাল ৪:৩০ টা)">ভেড়ামারা (বিকাল ৪:৩০ টা)</option>
@@ -703,13 +703,13 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
 
                   <div className="space-y-1">
                     <label className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                      <Utensils className="w-3.5 h-3.5 text-emerald-600" />
+                      <Utensils className="w-3.5 h-3.5 text-amber-600" />
                       <span>খাবারের পছন্দ</span>
                     </label>
                     <select
                       value={dietaryPreference}
                       onChange={(e) => setDietaryPreference(e.target.value as any)}
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                      className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs sm:text-sm bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                     >
                       <option value="হাঁসের মাংস">হাঁসের মাংস ও দেশি মাছ ভোজ (স্পেশাল)</option>
                       <option value="সাধারণ">শুধুমাত্র মুরগি ও মাছ</option>
@@ -723,7 +723,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
               {selectedSeatNumbers.length > 1 && (
                 <div className="space-y-3 pt-1">
                   <div className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-emerald-700" />
+                    <Users className="w-4 h-4 text-amber-700" />
                     <h5 className="text-xs sm:text-sm font-bold text-slate-900">
                       সহযাত্রীদের বিবরণ ({selectedSeatNumbers.length - 1} জন)
                     </h5>
@@ -751,7 +751,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                             </span>
                             <span>যাত্রী {idx + 2}</span>
                           </span>
-                          <span className="text-xs font-bold text-emerald-800 bg-white px-2 py-0.5 rounded-lg border border-slate-200 font-mono">
+                          <span className="text-xs font-bold text-amber-950 bg-white px-2 py-0.5 rounded-lg border border-amber-200 font-mono">
                             আসন: {seatLabel}
                           </span>
                         </div>
@@ -767,7 +767,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                               placeholder={`যাত্রী ${idx + 2} এর নাম`}
                               value={passenger.name}
                               onChange={(e) => updateExtraPassenger(seatNum, 'name', e.target.value)}
-                              className="w-full px-3 py-1.5 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                              className="w-full px-3 py-1.5 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                             />
                           </div>
 
@@ -780,7 +780,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                               placeholder="সহযাত্রীর মোবাইল নম্বর"
                               value={passenger.phone || ''}
                               onChange={(e) => updateExtraPassenger(seatNum, 'phone', e.target.value)}
-                              className="w-full px-3 py-1.5 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 font-mono"
+                              className="w-full px-3 py-1.5 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono"
                             />
                           </div>
 
@@ -825,7 +825,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5 cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span>আগের ধাপ</span>
@@ -835,10 +835,10 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                   type="button"
                   id="booking-step2-next-btn"
                   onClick={handleStep2Next}
-                  className="px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-600/25 flex items-center gap-2 active:scale-95 transition-all"
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm shadow-md shadow-amber-500/25 flex items-center gap-2 active:scale-95 transition-all cursor-pointer"
                 >
                   <span>পরবর্তী ধাপ (বুকিং রিকোয়েস্ট)</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-slate-950" />
                 </button>
               </div>
             </div>
@@ -849,9 +849,9 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
             <form onSubmit={handleSubmitBookingRequest} className="space-y-4">
               
               {/* Highlight Notice */}
-              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 space-y-2">
-                <div className="flex items-center gap-2 text-emerald-900 font-bold text-sm">
-                  <Sparkles className="w-4 h-4 text-emerald-700 shrink-0" />
+              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-xs text-amber-950 space-y-2">
+                <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
+                  <Sparkles className="w-4 h-4 text-amber-700 shrink-0" />
                   <span>অফলাইন পেমেন্ট ও সিট বুকিং প্রক্রিয়া</span>
                 </div>
                 <p className="leading-relaxed text-slate-700">
@@ -860,12 +860,12 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
               </div>
 
               {/* 1-Hour Expiration / Auto-Release Notice */}
-              <div className="p-4 rounded-2xl bg-amber-50 border border-amber-300 text-xs text-amber-950 space-y-1.5">
-                <div className="flex items-center gap-2 text-amber-900 font-bold text-sm">
-                  <Clock className="w-4 h-4 text-amber-700 shrink-0" />
+              <div className="p-4 rounded-2xl bg-orange-50 border border-orange-300 text-xs text-orange-950 space-y-1.5">
+                <div className="flex items-center gap-2 text-orange-900 font-bold text-sm">
+                  <Clock className="w-4 h-4 text-orange-700 shrink-0" />
                   <span>⏳ ১ ঘণ্টা অটো-রিলিজ পলিসি (গুরুত্বপূর্ণ)</span>
                 </div>
-                <p className="leading-relaxed text-amber-900">
+                <p className="leading-relaxed text-orange-900">
                   বুকিং রিকোয়েস্ট পাঠানোর পর <strong>১ ঘণ্টার মধ্যে</strong> পেমেন্ট করে টিকিট কনফার্ম না করলে, অপেক্ষমাণ (Pending/Reserved) সিটগুলো সিস্টেম কর্তৃক <strong>স্বয়ংক্রিয়ভাবে খালি (Release)</strong> হয়ে যাবে এবং অন্য যাত্রীরা বুক করতে পারবে।
                 </p>
               </div>
@@ -874,7 +874,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs space-y-2.5">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-200 font-bold text-slate-800">
                   <span>বুকিং রিকোয়েস্ট সারাংশ:</span>
-                  <span className="text-emerald-700 font-mono">{selectedSeatNumbers.length} টি আসন ({selectedSeatNumbers.map(n => seats.find(s => s.number === n)?.label).join(', ')})</span>
+                  <span className="text-amber-800 font-mono font-bold">{selectedSeatNumbers.length} টি আসন ({selectedSeatNumbers.map(n => seats.find(s => s.number === n)?.label).join(', ')})</span>
                 </div>
 
                 <div className="space-y-1 text-slate-700">
@@ -895,11 +895,11 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 <div className="flex justify-between items-center pt-2.5 border-t border-slate-200">
                   <div>
                     <span className="text-slate-600 block text-[11px]">মোট প্রদেয় অর্থ:</span>
-                    <span className="text-lg sm:text-xl font-bold text-emerald-900 font-sans">
+                    <span className="text-lg sm:text-xl font-bold text-amber-950 font-sans">
                       ৳{totalAmount.toLocaleString('bn-BD')} টাকা
                     </span>
                   </div>
-                  <span className="text-[11px] font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-200">
+                  <span className="text-[11px] font-bold text-amber-900 bg-amber-100 px-2.5 py-1 rounded-lg border border-amber-300">
                     ⏳ অফলাইনে পরিশোধযোগ্য
                   </span>
                 </div>
@@ -918,7 +918,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                       onClick={() => setPaymentMethod(method)}
                       className={`py-2 rounded-xl text-xs font-bold border transition-all ${
                         paymentMethod === method
-                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
+                          ? 'bg-amber-500 text-slate-950 font-black border-amber-500 shadow-xs'
                           : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                       }`}
                     >
@@ -931,16 +931,16 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                   <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
                     <span className="text-slate-600">{paymentMethod} নম্বর:</span>
                     <div className="flex items-center gap-2">
-                      <strong className="font-mono text-emerald-900 font-bold">
+                      <strong className="font-mono text-slate-900 font-bold">
                         {paymentMethod === 'bKash' ? settings.bkashNumber : paymentMethod === 'Nagad' ? settings.nagadNumber : settings.bankDetails}
                       </strong>
                       <button
                         type="button"
                         onClick={() => copyNumber(paymentMethod === 'bKash' ? settings.bkashNumber : settings.nagadNumber)}
-                        className="p-1 rounded bg-white text-emerald-700 hover:bg-emerald-50 border border-slate-300 text-[10px] font-bold flex items-center gap-1"
+                        className="p-1 rounded bg-white text-amber-800 hover:bg-amber-50 border border-slate-300 text-[10px] font-bold flex items-center gap-1 cursor-pointer"
                       >
-                        {isCopied ? <Check className="w-3 h-3 text-emerald-600" /> : <Copy className="w-3 h-3" />}
-                        <span>{isCopied ? 'কপি' : 'কপি'}</span>
+                        {isCopied ? <Check className="w-3 h-3 text-amber-600" /> : <Copy className="w-3 h-3" />}
+                        <span>{isCopied ? 'কপি হয়েছে' : 'কপি'}</span>
                       </button>
                     </div>
                   </div>
@@ -957,7 +957,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                   placeholder="যেমন: আমরা ৩ জন বন্ধু একসাথে বসতে চাই, অথবা কোনো বিশেষ চাহিদা..."
                   value={userNote}
                   onChange={(e) => setUserNote(e.target.value)}
-                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
               </div>
 
@@ -989,7 +989,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                   target="_blank"
                   rel="noopener noreferrer"
                   id="contact-whatsapp-to-confirm-booking-btn"
-                  className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-95 text-center group"
+                  className="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm shadow-md shadow-emerald-700/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.01] active:scale-95 text-center group cursor-pointer"
                 >
                   <MessageCircle className="w-4 h-4 text-white shrink-0 group-hover:animate-bounce" />
                   <span>Contact WhatsApp to confirm the booking</span>
@@ -1001,7 +1001,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-semibold flex items-center gap-1.5 cursor-pointer"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   <span>আগের ধাপ</span>
@@ -1010,9 +1010,9 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 <button
                   type="submit"
                   id="submit-booking-request-btn"
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-emerald-600/25 flex items-center gap-2 active:scale-95 transition-all"
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm shadow-lg shadow-amber-500/25 flex items-center gap-2 active:scale-95 transition-all cursor-pointer"
                 >
-                  <CheckCircle2 className="w-4 h-4" />
+                  <CheckCircle2 className="w-4 h-4 text-slate-950" />
                   <span>সিট বুকিং রিকোয়েস্ট পাঠান</span>
                 </button>
               </div>
@@ -1024,8 +1024,8 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
             <div className="space-y-5 text-center py-2 animate-in zoom-in-95 duration-200">
               
               {/* Success Badge */}
-              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full mx-auto flex items-center justify-center shadow-inner">
-                <CheckCircle2 className="w-9 h-9 text-emerald-600" />
+              <div className="w-16 h-16 bg-amber-100 text-amber-700 rounded-full mx-auto flex items-center justify-center shadow-inner border border-amber-300">
+                <CheckCircle2 className="w-9 h-9 text-amber-700" />
               </div>
 
               <div className="space-y-1">
@@ -1041,7 +1041,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
               <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 max-w-lg mx-auto text-left space-y-2.5 text-xs">
                 <div className="flex items-center justify-between pb-2 border-b border-slate-200">
                   <span className="text-slate-500 font-medium">বুকিং রেফারেন্স কোড:</span>
-                  <span className="font-mono font-extrabold text-emerald-800 text-sm bg-emerald-100 px-3 py-0.5 rounded-lg border border-emerald-200">
+                  <span className="font-mono font-black text-amber-950 text-sm bg-amber-200 px-3 py-0.5 rounded-lg border border-amber-300">
                     {submittedBooking.bookingCode}
                   </span>
                 </div>
@@ -1057,7 +1057,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                   </div>
                   <div>
                     <span className="text-[11px] text-slate-500 block">বরাদ্দকৃত আসন ({submittedBooking.seatNumbers.length}টি):</span>
-                    <strong className="text-emerald-700 font-mono text-sm">{submittedBooking.seatLabels.join(', ')}</strong>
+                    <strong className="text-amber-900 font-mono text-sm">{submittedBooking.seatLabels.join(', ')}</strong>
                   </div>
                   <div>
                     <span className="text-[11px] text-slate-500 block">মোট প্রদেয় ফি:</span>
@@ -1081,7 +1081,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                   target="_blank"
                   rel="noopener noreferrer"
                   id="whatsapp-booking-cta-btn"
-                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 group"
+                  className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-sm sm:text-base shadow-xl shadow-emerald-600/30 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-95 group cursor-pointer"
                 >
                   <MessageCircle className="w-6 h-6 text-white shrink-0 group-hover:animate-bounce" />
                   <span>টিকিট বুকিং নিশ্চিত করতে WhatsApp এ নক করুন</span>
@@ -1092,7 +1092,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                     href={`tel:${settings.organizerPhone.replace(/[^0-9+]/g, '')}`}
                     className="py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-2 border border-slate-800 transition-colors"
                   >
-                    <PhoneCall className="w-4 h-4 text-emerald-400" />
+                    <PhoneCall className="w-4 h-4 text-amber-400" />
                     <span>সরাসরি কল দিন: {settings.organizerPhone}</span>
                   </a>
 
@@ -1102,9 +1102,9 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                       setLatestTicket(submittedBooking);
                       closeBookingModal();
                     }}
-                    className="py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center justify-center gap-2 border border-slate-300 transition-colors"
+                    className="py-2.5 px-4 rounded-xl bg-amber-100/80 hover:bg-amber-200/80 text-amber-950 text-xs font-bold flex items-center justify-center gap-2 border border-amber-300 transition-colors cursor-pointer"
                   >
-                    <FileText className="w-4 h-4 text-slate-600" />
+                    <FileText className="w-4 h-4 text-amber-800" />
                     <span>রিকোয়েস্ট স্লিপ প্রিভিউ</span>
                   </button>
                 </div>
@@ -1114,7 +1114,7 @@ ${submittedBooking.notes ? `📝 বিশেষ অনুরোধ: ${submitted
                 <button
                   type="button"
                   onClick={closeBookingModal}
-                  className="text-xs text-slate-500 hover:text-slate-800 underline font-semibold transition-colors"
+                  className="text-xs text-slate-500 hover:text-slate-800 underline font-semibold transition-colors cursor-pointer"
                 >
                   উইন্ডো বন্ধ করুন ও মূল পেইজে ফিরে যান
                 </button>

@@ -59,7 +59,7 @@ export const WhatsIncluded: React.FC = () => {
         
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
-          <span className="text-emerald-700 font-semibold tracking-widest text-xs sm:text-sm uppercase block mb-2">
+          <span className="text-amber-800 font-bold tracking-widest text-xs sm:text-sm uppercase block mb-2">
             প্যাকেজ বিবরণী
           </span>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-tight font-sans">
@@ -77,24 +77,24 @@ export const WhatsIncluded: React.FC = () => {
             return (
               <div
                 key={item.title}
-                className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 flex flex-col justify-between group"
+                className="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 hover:shadow-xl hover:border-amber-400 transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
                   {/* Photo thumbnail */}
-                  <div className="relative h-44 rounded-2xl overflow-hidden mb-5">
+                  <div className="relative h-44 rounded-2xl overflow-hidden mb-5 border border-slate-100">
                     <img
                       src={item.image}
                       alt={item.title}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
-                    <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-slate-950/80 backdrop-blur-md text-emerald-300 text-xs font-bold">
+                    <div className="absolute top-3 right-3 px-3 py-1 rounded-full bg-slate-950/85 backdrop-blur-md text-amber-300 text-xs font-bold border border-amber-400/30">
                       {item.tag}
                     </div>
                   </div>
 
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <div className="p-2.5 rounded-xl bg-amber-50 text-amber-800 border border-amber-200 group-hover:bg-amber-500 group-hover:text-slate-950 group-hover:border-amber-500 transition-colors">
                       <Icon className="w-5 h-5" />
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 font-sans">
@@ -107,8 +107,8 @@ export const WhatsIncluded: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs font-bold text-emerald-700">
-                  <Check className="w-4 h-4 text-emerald-600" />
+                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs font-bold text-amber-800">
+                  <Check className="w-4 h-4 text-amber-600" />
                   <span>ফির অন্তর্ভুক্ত</span>
                 </div>
               </div>

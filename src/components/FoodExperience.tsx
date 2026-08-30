@@ -36,15 +36,15 @@ export const FoodExperience: React.FC = () => {
   return (
     <section id="food" className="py-24 sm:py-32 bg-slate-950 text-white relative overflow-hidden scroll-mt-12">
       {/* Background Ambience */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-teal-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-yellow-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         
         {/* Section Header */}
         <div className="max-w-3xl mx-auto text-center mb-16 sm:mb-20">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-semibold mb-3">
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 border border-amber-400/30 text-amber-300 text-xs font-semibold mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
             <span>স্বাদে ও তৃপ্তিতে অনন্য</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-tight leading-tight font-sans">
@@ -62,17 +62,17 @@ export const FoodExperience: React.FC = () => {
             return (
               <div
                 key={item.title}
-                className="group rounded-3xl bg-slate-900/80 border border-slate-800 p-6 hover:border-emerald-500/40 hover:bg-slate-900 transition-all duration-300 flex flex-col sm:flex-row gap-5 items-center"
+                className="group rounded-3xl bg-slate-900/80 border border-slate-800 p-6 hover:border-amber-500/40 hover:bg-slate-900 transition-all duration-300 flex flex-col sm:flex-row gap-5 items-center"
               >
                 {/* Photo Thumbnail */}
-                <div className="relative w-full sm:w-40 h-40 rounded-2xl overflow-hidden shrink-0">
+                <div className="relative w-full sm:w-40 h-40 rounded-2xl overflow-hidden shrink-0 border border-slate-800">
                   <img
                     src={item.image}
                     alt={item.title}
                     referrerPolicy="no-referrer"
                     className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500"
                   />
-                  <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-slate-950/80 text-emerald-300 text-[11px] font-bold">
+                  <div className="absolute top-2 left-2 px-2.5 py-0.5 rounded-full bg-slate-950/85 text-amber-300 text-[11px] font-bold border border-amber-400/30">
                     {item.tag}
                   </div>
                 </div>
@@ -80,10 +80,10 @@ export const FoodExperience: React.FC = () => {
                 {/* Details */}
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-emerald-500/20 text-emerald-400">
+                    <div className="p-1.5 rounded-lg bg-amber-500/20 text-amber-400">
                       <Icon className="w-4 h-4" />
                     </div>
-                    <h3 className="text-lg font-bold text-white font-sans group-hover:text-emerald-300 transition-colors">
+                    <h3 className="text-lg font-bold text-white font-sans group-hover:text-amber-300 transition-colors">
                       {item.title}
                     </h3>
                   </div>
@@ -99,7 +99,7 @@ export const FoodExperience: React.FC = () => {
 
         {/* Note */}
         <div className="mt-12 max-w-2xl mx-auto p-5 rounded-2xl bg-slate-900/60 border border-slate-800 text-center text-xs sm:text-sm text-slate-300">
-          🍲 <span className="font-semibold text-emerald-300">বিশেষ অনুরোধ:</span> কোনো সহযাত্রী যদি নিরামিষাশী হন, বুকিংয়ের সময় জানালে আপনার জন্য আলাদা খাবারের সুব্যবস্থা রাখা হবে।
+          🍲 <span className="font-semibold text-amber-300">বিশেষ অনুরোধ:</span> কোনো সহযাত্রী যদি নিরামিষাশী হন, বুকিংয়ের সময় জানালে আপনার জন্য আলাদা খাবারের সুব্যবস্থা রাখা হবে।
         </div>
 
       </div>

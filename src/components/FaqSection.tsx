@@ -17,8 +17,8 @@ export const FaqSection: React.FC = () => {
         
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold tracking-wide mb-3">
-            <HelpCircle className="w-3.5 h-3.5 text-emerald-700" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-100/90 text-amber-950 text-xs font-semibold tracking-wide mb-3 border border-amber-300">
+            <HelpCircle className="w-3.5 h-3.5 text-amber-700" />
             <span>সচরাচর জিজ্ঞাসা</span>
           </div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-tight font-sans">
@@ -38,20 +38,20 @@ export const FaqSection: React.FC = () => {
                 key={index}
                 className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
                   isOpen
-                    ? 'bg-white border-emerald-400 shadow-md ring-1 ring-emerald-500/15'
-                    : 'bg-white/80 border-slate-200 hover:border-emerald-300 hover:bg-white'
+                    ? 'bg-white border-amber-400 shadow-md ring-1 ring-amber-500/25'
+                    : 'bg-white/80 border-slate-200 hover:border-amber-300 hover:bg-white'
                 }`}
               >
                 <button
                   onClick={() => toggleAccordion(index)}
-                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 focus:outline-none"
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 focus:outline-none cursor-pointer"
                 >
                   <span className="text-base sm:text-lg font-bold text-slate-900 font-sans">
                     {faq.q}
                   </span>
                   <div
                     className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 ${
-                      isOpen ? 'bg-emerald-600 text-white rotate-180' : 'bg-slate-100 text-slate-600'
+                      isOpen ? 'bg-amber-500 text-slate-950 rotate-180' : 'bg-slate-100 text-slate-600'
                     }`}
                   >
                     <ChevronDown className="w-4 h-4" />
@@ -69,13 +69,13 @@ export const FaqSection: React.FC = () => {
         </div>
 
         {/* Extra contact help box */}
-        <div className="mt-12 p-6 rounded-3xl bg-emerald-50/80 border border-emerald-200 text-center space-y-2">
-          <h4 className="text-base font-bold text-emerald-950 font-sans flex items-center justify-center gap-2">
-            <PhoneCall className="w-4 h-4 text-emerald-700" />
+        <div className="mt-12 p-6 rounded-3xl bg-amber-50/80 border border-amber-200 text-center space-y-2">
+          <h4 className="text-base font-bold text-amber-950 font-sans flex items-center justify-center gap-2">
+            <PhoneCall className="w-4 h-4 text-amber-700" />
             <span>আপনার কোনো বিশেষ জিজ্ঞাসা আছে?</span>
           </h4>
           <p className="text-xs sm:text-sm text-slate-700">
-            আমাদের সাথে সরাসরি কথা বলে যেকোনো বিষয়ে নিশ্চিত হতে পারেন: <a href={`tel:${settings.organizerPhone}`} className="text-emerald-800 font-semibold hover:underline">{settings.organizerPhone}</a>
+            আমাদের সাথে সরাসরি কথা বলে যেকোনো বিষয়ে নিশ্চিত হতে পারেন: <a href={`tel:${settings.organizerPhone}`} className="text-amber-800 font-bold hover:underline">{settings.organizerPhone}</a>
           </p>
         </div>
 

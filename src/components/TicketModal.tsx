@@ -328,7 +328,7 @@ export const TicketModal: React.FC = () => {
 
         {/* WhatsApp & Additional Actions for pending bookings - Plain flat */}
         {latestTicket.paymentStatus === 'অপেক্ষমাণ' && (
-          <div className="p-4 bg-slate-100 border-t border-slate-200 text-center space-y-2 no-print">
+          <div className="p-4 bg-amber-50/50 border-t border-amber-200 text-center space-y-2 no-print">
             <p className="text-xs font-bold text-slate-800">
               বুকিং ও আসনটি চূড়ান্ত নিশ্চিত করতে WhatsApp-এ যোগাযোগ করুন:
             </p>
@@ -336,7 +336,7 @@ export const TicketModal: React.FC = () => {
               href={waUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
               <span>WhatsApp এ বুকিং কনফার্ম করুন</span>
@@ -347,22 +347,22 @@ export const TicketModal: React.FC = () => {
         {/* Footer Actions - Plain Flat */}
         <div className="p-4 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-3 no-print">
           <div className="text-xs text-slate-300">
-            মোট টিকিট: <strong className="text-white font-mono">{seatTickets.length}</strong> টি (আলাদা টিকিট ও ৩টি খাবার টোকেন সহ)
+            মোট টিকিট: <strong className="text-amber-400 font-mono">{seatTickets.length}</strong> টি (আলাদা টিকিট ও ৩টি খাবার টোকেন সহ)
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => setLatestTicket(null)}
-              className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors"
+              className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition-colors cursor-pointer"
             >
               বন্ধ করুন
             </button>
 
             <button
               onClick={handlePrint}
-              className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm flex items-center gap-2 transition-colors cursor-pointer"
+              className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 transition-all cursor-pointer shadow-md shadow-amber-500/20"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="w-4 h-4 text-slate-950" />
               <span>সকল টিকিট প্রিন্ট / PDF সেভ করুন</span>
             </button>
           </div>

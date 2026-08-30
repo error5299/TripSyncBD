@@ -41,14 +41,14 @@ export const InterestedSection: React.FC = () => {
   return (
     <section className="py-20 sm:py-28 bg-slate-900 text-white relative overflow-hidden">
       {/* Visual background lights */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-80 h-80 bg-teal-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-80 h-80 bg-yellow-600/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="bg-slate-950/80 border border-emerald-500/20 rounded-3xl p-8 sm:p-12 shadow-2xl backdrop-blur-xl">
+        <div className="bg-slate-950/85 border border-amber-500/30 rounded-3xl p-8 sm:p-12 shadow-2xl backdrop-blur-xl">
           
           <div className="text-center max-w-2xl mx-auto mb-8">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold mb-3 border border-emerald-400/30">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-semibold mb-3 border border-amber-400/30">
               <HeartHandshake className="w-4 h-4" />
               <span>ওয়েটিং লিস্ট ও পরামর্শ</span>
             </div>
@@ -63,17 +63,17 @@ export const InterestedSection: React.FC = () => {
           </div>
 
           {isSubmitted ? (
-            <div className="p-8 rounded-2xl bg-emerald-950/70 border border-emerald-400/40 text-center space-y-3 animate-in zoom-in-95 duration-300">
-              <CheckCircle2 className="w-12 h-12 text-emerald-400 mx-auto" />
+            <div className="p-8 rounded-2xl bg-amber-950/70 border border-amber-400/40 text-center space-y-3 animate-in zoom-in-95 duration-300">
+              <CheckCircle2 className="w-12 h-12 text-amber-400 mx-auto" />
               <h3 className="text-xl font-bold text-white font-sans">
                 ধন্যবাদ! আপনার আগ্রহ গ্রহণ করা হয়েছে
               </h3>
-              <p className="text-sm text-emerald-200">
+              <p className="text-sm text-amber-200">
                 খুব শীঘ্রই আমাদের টিম আপনার সাথে ফোনে কথা বলে সব বিস্তারিত জানিয়ে দেবে।
               </p>
               <button
                 onClick={() => setIsSubmitted(false)}
-                className="mt-2 text-xs font-semibold text-white/80 hover:text-white underline"
+                className="mt-2 text-xs font-semibold text-amber-300 hover:text-amber-200 underline cursor-pointer"
               >
                 আরেকটি এন্ট্রি যোগ করুন
               </button>
@@ -85,7 +85,7 @@ export const InterestedSection: React.FC = () => {
                 {/* Name */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                    <User className="w-3.5 h-3.5 text-emerald-400" />
+                    <User className="w-3.5 h-3.5 text-amber-400" />
                     <span>আপনার পুরো নাম</span>
                   </label>
                   <input
@@ -94,14 +94,14 @@ export const InterestedSection: React.FC = () => {
                     placeholder="যেমন: তানভীর রহমান"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
 
                 {/* Phone */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                    <Phone className="w-3.5 h-3.5 text-amber-400" />
                     <span>মোবাইল নম্বর</span>
                   </label>
                   <input
@@ -110,7 +110,7 @@ export const InterestedSection: React.FC = () => {
                     placeholder="যেমন: 017XXXXXXXX"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   />
                 </div>
 
@@ -121,13 +121,13 @@ export const InterestedSection: React.FC = () => {
                 {/* Number of seats */}
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                    <Users className="w-3.5 h-3.5 text-emerald-400" />
+                    <Users className="w-3.5 h-3.5 text-amber-400" />
                     <span>সম্ভাব্য সিটের সংখ্যা</span>
                   </label>
                   <select
                     value={seats}
                     onChange={(e) => setSeats(Number(e.target.value))}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   >
                     <option value={1}>১ জন</option>
                     <option value={2}>২ জন</option>
@@ -145,7 +145,7 @@ export const InterestedSection: React.FC = () => {
                   <select
                     value={preferredTime}
                     onChange={(e) => setPreferredTime(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
                   >
                     <option value="যে কোনো সময়">যে কোনো সময়</option>
                     <option value="সকাল ১০টা - দুপুর ১টা">সকাল ১০টা - দুপুর ১টা</option>
@@ -159,9 +159,9 @@ export const InterestedSection: React.FC = () => {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base shadow-lg shadow-emerald-700/20 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-amber-500 via-amber-400 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-black text-base shadow-lg shadow-amber-500/25 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Send className="w-4 h-4" />
+                  <Send className="w-4 h-4 text-slate-950" />
                   <span>আমি আগ্রহী — আমাকে বিস্তারিত জানান</span>
                 </button>
               </div>
