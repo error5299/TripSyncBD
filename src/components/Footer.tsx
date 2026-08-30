@@ -26,12 +26,12 @@ export const Footer: React.FC = () => {
           {/* Brand & Narrative */}
           <div className="lg:col-span-5 space-y-4">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-white p-0.5 shadow-lg border border-slate-800 overflow-hidden flex items-center justify-center">
+              <div className="h-12 px-2.5 rounded-xl bg-white p-1 shadow-lg border border-slate-800 overflow-hidden flex items-center justify-center">
                 <img 
-                  src="https://www.belayet.pro.bd/wp-content/uploads/2026/08/ChatGPT-Image-Aug-25-2026-05_46_12-PM.png"
+                  src="https://www.belayet.pro.bd/wp-content/uploads/2026/08/PTTI-Web.png"
                   alt="Logo"
                   referrerPolicy="no-referrer"
-                  className="w-full h-full object-cover rounded-lg"
+                  className="h-full w-auto object-contain"
                 />
               </div>
               <div>

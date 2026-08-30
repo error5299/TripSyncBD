@@ -362,10 +362,45 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const createBooking = (data: Omit<Booking, 'id' | 'bookingCode' | 'bookingDate' | 'checkedIn'>): Booking => {
     const randomCode = `TH-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    // Ensure every single passenger/seat has a strictly distinct seat booking ID and token codes
+    const enrichedPassengers = (data.passengers && data.passengers.length > 0)
+      ? data.passengers.map((p, idx) => {
+          const seatLabel = p.seatLabel || data.seatLabels[idx] || `${p.seatNumber}`;
+          const seatBookingCode = `${randomCode}-${seatLabel}`;
+          return {
+            ...p,
+            seatLabel,
+            passengerBookingCode: p.passengerBookingCode || seatBookingCode,
+            ticketCode: p.ticketCode || `TK-${seatLabel}-${randomCode}`,
+            snackCode: p.snackCode || `SN-${seatLabel}-${randomCode}`,
+            lunchCode: p.lunchCode || `LN-${seatLabel}-${randomCode}`,
+            breakfastCode: p.breakfastCode || `BF-${seatLabel}-${randomCode}`,
+          };
+        })
+      : data.seatNumbers.map((seatNum, idx) => {
+          const seatLabel = data.seatLabels[idx] || `${seatNum}`;
+          const seatBookingCode = `${randomCode}-${seatLabel}`;
+          return {
+            seatNumber: seatNum,
+            seatLabel,
+            name: data.name,
+            gender: data.gender,
+            phone: data.phone,
+            dietaryPreference: data.dietaryPreference,
+            passengerBookingCode: seatBookingCode,
+            ticketCode: `TK-${seatLabel}-${randomCode}`,
+            snackCode: `SN-${seatLabel}-${randomCode}`,
+            lunchCode: `LN-${seatLabel}-${randomCode}`,
+            breakfastCode: `BF-${seatLabel}-${randomCode}`,
+          };
+        });
+
     const newBooking: Booking = {
       ...data,
       id: `b_${Date.now()}`,
       bookingCode: randomCode,
+      passengers: enrichedPassengers,
       bookingDate: new Date().toISOString().split('T')[0],
       createdAt: Date.now(),
       checkedIn: false,
@@ -376,10 +411,11 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const updatedSeats = seats.map(s => {
       if (data.seatNumbers.includes(s.number)) {
-        const passengerInfo = data.passengers?.find(p => p.seatNumber === s.number);
+        const passengerInfo = enrichedPassengers.find(p => p.seatNumber === s.number);
         const pName = passengerInfo?.name || data.name;
         const pGender = passengerInfo?.gender || data.gender;
         const pPhone = passengerInfo?.phone || data.phone;
+        const seatBookingId = passengerInfo?.passengerBookingCode || `${randomCode}-${s.label}`;
 
         return {
           ...s,
@@ -389,7 +425,7 @@ export const TourProvider: React.FC<{ children: React.ReactNode }> = ({ children
           bookedBy: {
             name: pName,
             phone: pPhone,
-            bookingId: randomCode,
+            bookingId: seatBookingId,
             gender: pGender,
           }
         };

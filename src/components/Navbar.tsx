@@ -56,12 +56,12 @@ export const Navbar: React.FC = () => {
             id="header-brand-logo"
             className="flex items-center gap-3 group focus:outline-none"
           >
-            <div className="relative w-11 h-11 rounded-xl bg-white p-0.5 shadow-md border border-slate-200/80 group-hover:scale-105 transition-transform duration-200 overflow-hidden flex items-center justify-center">
+            <div className="relative h-11 px-2 rounded-xl bg-white p-1 shadow-md border border-slate-200/80 group-hover:scale-105 transition-transform duration-200 overflow-hidden flex items-center justify-center">
               <img 
-                src="https://www.belayet.pro.bd/wp-content/uploads/2026/08/ChatGPT-Image-Aug-25-2026-05_46_12-PM.png"
+                src="https://www.belayet.pro.bd/wp-content/uploads/2026/08/PTTI-Web.png"
                 alt="Logo"
                 referrerPolicy="no-referrer"
-                className="w-full h-full object-cover rounded-lg"
+                className="h-full w-auto object-contain"
               />
             </div>
             

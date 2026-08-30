@@ -30,6 +30,11 @@ export interface PassengerInfo {
   phone?: string;
   age?: string;
   dietaryPreference?: 'সাধারণ' | 'হাঁসের মাংস' | 'নিরামিষ';
+  passengerBookingCode?: string; // Unique per seat e.g. TH-8472-A1
+  ticketCode?: string; // Unique per seat e.g. TK-A1-TH8472
+  snackCode?: string; // বিকালের খাবার টোকেন e.g. SN-A1-TH8472
+  lunchCode?: string; // দুপুরের খাবার টোকেন e.g. LN-A1-TH8472
+  breakfastCode?: string; // সকালের খাবার টোকেন e.g. BF-A1-TH8472
 }
 
 export interface Booking {
